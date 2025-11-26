@@ -1,5 +1,5 @@
 {
-  "name": "backend",
+  "name": "@n8n-trading/backend",
   "module": "index.ts",
   "type": "module",
   "private": true,
