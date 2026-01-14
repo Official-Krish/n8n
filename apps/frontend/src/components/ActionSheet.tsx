@@ -111,11 +111,20 @@ export const ActionSheet = ({ onSelect} : {
 
                             <div className="text-sm text-muted-foreground">Number of shares you want to trade</div>
 
-                            <Input type="number" value={(metadata as TradingMetadata).qty} onChange={(e) => setMetadata(metadata => ({
-                                ...metadata,
-                                qty: Number(e.target.value)
-                            }) )} 
-                            className="mt-1"
+                                <Input type="number" value={(metadata as TradingMetadata).qty} onChange={(e) => setMetadata(metadata => ({
+                                    ...metadata,
+                                    qty: Number(e.target.value)
+                                }) )} 
+                                className="mt-1"
+                            />
+
+                            <div className="text-sm text-muted-foreground">API Key</div>
+
+                                <Input type="text" value={(metadata as TradingMetadata).apiKey} onChange={(e) => setMetadata(metadata => ({
+                                    ...metadata,
+                                    apiKey: e.target.value
+                                }) )} 
+                                className="mt-1"
                             />
                         </div>
                     }

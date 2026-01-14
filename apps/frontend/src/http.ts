@@ -1,7 +1,9 @@
 import axios from "axios";
 import type { IdResponse, SigninResponse, Workflow } from "./types/api";
 
-const API_BASE = "http://localhost:3000/api/v1"; 
+const API_BASE =
+  (import.meta as any).env?.VITE_API_BASE?.toString?.() ??
+  "http://localhost:3000/api/v1";
 
 export const api = axios.create({
   baseURL: API_BASE,
