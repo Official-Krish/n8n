@@ -41,6 +41,7 @@ export const CreateWorkflow = () => {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [showTriggerSheet, setShowTriggerSheet] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [selectedAction, setSelectedAction] = useState<{
     position: { x: number; y: number };
     startingNodeId: string;
@@ -129,80 +130,90 @@ export const CreateWorkflow = () => {
   return (
     <div className="bg-black min-h-screen w-full text-white pt-24 pb-8 px-6 md:px-10">
       <div className="mx-auto max-w-6xl">
-        <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div>
-            <p className="text-xs font-medium uppercase tracking-[0.2em] text-[#f17463]">
-              {workflowId ? "Edit workflow" : "Create workflow"}
-            </p>
-            <h1 className="mt-2 text-2xl font-medium tracking-tight text-neutral-50 md:text-3xl">
-              Visual workflow builder
-            </h1>
-            <p className="mt-1 max-w-xl text-sm text-neutral-400">
-              Chain together triggers and broker actions to automate your
-              trading strategies, with the same aesthetic as your landing
-              experience.
-            </p>
-          </div>
-          <div className="flex flex-col items-end gap-2 text-xs md:text-sm">
-            {workflowId && (
-              <div className="rounded-full border border-neutral-800 bg-neutral-950 px-3 py-1 text-neutral-400">
-                <span className="mr-1 text-neutral-500">Workflow ID:</span>
-                <span className="font-mono text-neutral-200">
-                  {workflowId.slice(0, 6)}...
-                </span>
+        {!isFullscreen && (
+          <>
+            <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div>
+                <p className="text-xs font-medium uppercase tracking-[0.2em] text-[#f17463]">
+                  {workflowId ? "Edit workflow" : "Create workflow"}
+                </p>
+                <h1 className="mt-2 text-2xl font-medium tracking-tight text-neutral-50 md:text-3xl">
+                  Visual workflow builder
+                </h1>
+                <p className="mt-1 max-w-xl text-sm text-neutral-400">
+                  Chain together triggers and broker actions to automate your
+                  trading strategies, with the same aesthetic as your landing
+                  experience.
+                </p>
               </div>
-            )}
-            {saveError && (
-              <div className="max-w-xs rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-xs text-red-300">
-                {saveError}
+              <div className="flex flex-col items-end gap-2 text-xs md:text-sm">
+                {workflowId && (
+                  <div className="rounded-full border border-neutral-800 bg-neutral-950 px-3 py-1 text-neutral-400">
+                    <span className="mr-1 text-neutral-500">Workflow ID:</span>
+                    <span className="font-mono text-neutral-200">
+                      {workflowId.slice(0, 6)}...
+                    </span>
+                  </div>
+                )}
+                {saveError && (
+                  <div className="max-w-xs rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-xs text-red-300">
+                    {saveError}
+                  </div>
+                )}
+                <Button
+                  variant="default"
+                  onClick={onSave}
+                  disabled={!canSave || saving}
+                  className="mt-1 bg-white px-5 py-2 text-xs font-medium text-neutral-900 hover:bg-gray-200 md:text-sm"
+                >
+                  {saving
+                    ? "Saving..."
+                    : workflowId
+                      ? "Update workflow"
+                      : "Save workflow"}
+                </Button>
               </div>
-            )}
-            <Button
-              variant="default"
-              onClick={onSave}
-              disabled={!canSave || saving}
-              className="mt-1 bg-white px-5 py-2 text-xs font-medium text-neutral-900 hover:bg-gray-200 md:text-sm"
-            >
-              {saving
-                ? "Saving..."
-                : workflowId
-                  ? "Update workflow"
-                  : "Save workflow"}
-            </Button>
-          </div>
-        </div>
+            </div>
 
-        <div className="mb-4 grid gap-3 text-xs text-neutral-400 md:grid-cols-3">
-          <div className="rounded-2xl border border-neutral-800 bg-neutral-950/60 p-3">
-            <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-neutral-500">
-              Trigger
-            </p>
-            <p className="mt-1 text-sm text-neutral-200">
-              Start with a market event or timer node. You can only have one
-              root trigger per workflow.
-            </p>
-          </div>
-          <div className="rounded-2xl border border-neutral-800 bg-neutral-950/60 p-3">
-            <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-neutral-500">
-              Actions
-            </p>
-            <p className="mt-1 text-sm text-neutral-200">
-              Connect Zerodha or Groww execution blocks to define how trades
-              should be placed when your conditions hit.
-            </p>
-          </div>
-          <div className="rounded-2xl border border-neutral-800 bg-neutral-950/60 p-3">
-            <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-neutral-500">
-              Live-safe
-            </p>
-            <p className="mt-1 text-sm text-neutral-200">
-              Changes to an existing workflow are versioned via the backend.
-              Save frequently before promoting to live trading.
-            </p>
-          </div>
-        </div>
+            <div className="mb-4 grid gap-3 text-xs text-neutral-400 md:grid-cols-3">
+              <div className="rounded-2xl border border-neutral-800 bg-neutral-950/60 p-3">
+                <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-neutral-500">
+                  Trigger
+                </p>
+                <p className="mt-1 text-sm text-neutral-200">
+                  Start with a market event or timer node. You can only have one
+                  root trigger per workflow.
+                </p>
+              </div>
+              <div className="rounded-2xl border border-neutral-800 bg-neutral-950/60 p-3">
+                <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-neutral-500">
+                  Actions
+                </p>
+                <p className="mt-1 text-sm text-neutral-200">
+                  Connect Zerodha or Groww execution blocks to define how trades
+                  should be placed when your conditions hit.
+                </p>
+              </div>
+              <div className="rounded-2xl border border-neutral-800 bg-neutral-950/60 p-3">
+                <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-neutral-500">
+                  Live-safe
+                </p>
+                <p className="mt-1 text-sm text-neutral-200">
+                  Changes to an existing workflow are versioned via the backend.
+                  Save frequently before promoting to live trading.
+                </p>
+              </div>
+            </div>
+          </>
+        )}
 
-        <div className="relative mt-4 h-[60vh] rounded-3xl border border-neutral-800 bg-linear-to-br from-neutral-950 via-black to-neutral-900/90 p-3 md:h-[65vh]">
+        <div
+          className={`relative mt-4 rounded-3xl border border-neutral-800 bg-linear-to-br from-neutral-950 via-black to-neutral-900/90 p-3 ${
+            isFullscreen
+              ? "fixed inset-0 z-40 h-screen md:h-screen pt-24 md:pt-24 px-4 md:px-10"
+              : "h-[60vh] md:h-[65vh]"
+          }`}
+        >
           {loading && (
             <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-3xl bg-black/60 backdrop-blur-sm">
               <div className="flex flex-col items-center gap-2 text-sm text-neutral-300">
@@ -226,6 +237,43 @@ export const CreateWorkflow = () => {
                 onClick={() => setShowTriggerSheet(true)}
               >
                 + Add first trigger
+              </Button>
+            </div>
+          )}
+
+          <button
+            type="button"
+            className="absolute right-4 top-4 z-20 rounded-full border border-neutral-800 bg-neutral-950/80 px-3 py-1 text-[11px] font-medium text-neutral-200 hover:bg-neutral-900/90"
+            onClick={() => setIsFullscreen((prev) => !prev)}
+          >
+            {isFullscreen ? "Close full screen" : "Full screen"}
+          </button>
+
+          {isFullscreen && (
+            <div className="absolute left-4 top-4 z-20 flex items-center gap-2">
+              {workflowId && (
+                <div className="rounded-full border border-neutral-800 bg-neutral-950/80 px-3 py-1 text-[11px] text-neutral-300">
+                  <span className="mr-1 text-neutral-500">ID:</span>
+                  <span className="font-mono text-neutral-100">
+                    {workflowId.slice(0, 6)}...
+                  </span>
+                </div>
+              )}
+              {saveError && (
+                <div className="max-w-xs rounded-full border border-red-500/40 bg-red-500/10 px-3 py-1 text-[11px] text-red-300">
+                  {saveError}
+                </div>
+              )}
+              <Button
+                onClick={onSave}
+                disabled={!canSave || saving}
+                className="bg-white px-4 py-2 text-xs font-medium text-neutral-900 hover:bg-gray-200"
+              >
+                {saving
+                  ? "Saving..."
+                  : workflowId
+                    ? "Update workflow"
+                    : "Save workflow"}
               </Button>
             </div>
           )}
@@ -303,7 +351,7 @@ export const CreateWorkflow = () => {
                 size={2}
                 color="#262626"
                 variant={BackgroundVariant.Dots}
-              /> 
+              />
             </ReactFlow>
           </div>
         </div>
