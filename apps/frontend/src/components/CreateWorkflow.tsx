@@ -4,6 +4,8 @@ import {
   applyEdgeChanges,
   applyNodeChanges,
   addEdge,
+  BackgroundVariant,
+  Background,
 } from "@xyflow/react";
 import { useParams } from "react-router-dom";
 import { type EdgeType, type NodeType } from "@n8n-trading/types";
@@ -253,6 +255,12 @@ export const CreateWorkflow = () => {
 
             {selectedAction && (
               <ActionSheet
+                open={!!selectedAction}
+                onOpenChange={(open) => {
+                  if (!open) {
+                    setSelectedAction(null);
+                  }
+                }}
                 onSelect={(type, metadata) => {
                   const nodeId = Math.random().toString();
                   setNodes([
@@ -289,7 +297,14 @@ export const CreateWorkflow = () => {
               onConnect={onConnect}
               onConnectEnd={onConnectEnd}
               fitView
-            />
+            >
+              <Background
+                gap={22}
+                size={2}
+                color="#262626"
+                variant={BackgroundVariant.Dots}
+              /> 
+            </ReactFlow>
           </div>
         </div>
       </div>

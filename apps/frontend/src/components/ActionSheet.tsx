@@ -38,14 +38,26 @@ const SUPPORTED_ACTIONS = [
   },
 ];
 
-export const ActionSheet = ({ onSelect }: {
+export const ActionSheet = ({
+  onSelect,
+  open,
+  onOpenChange,
+}: {
   onSelect: (kind: NodeKind, metadata: NodeMetadata) => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }) => {
   const [metadata, setMetadata] = useState<TradingMetadata | {}>({});
   const [selectedAction, setSelectedAction] = useState("");
 
+  const handleCreate = () => {
+    if (!selectedAction) return;
+    onSelect(selectedAction as NodeKind, metadata);
+    onOpenChange(false);
+  };
+
   return (
-    <Sheet open={true}>
+    <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="border-l border-neutral-800 bg-black text-neutral-50 sm:max-w-md">
         <SheetHeader className="gap-4 p-5">
           <div className="space-y-1">
@@ -77,7 +89,7 @@ export const ActionSheet = ({ onSelect }: {
                     <SelectItem
                       key={action.id}
                       value={action.id}
-                      className="cursor-pointer text-sm text-neutral-100 focus:bg-neutral-800"
+                      className="cursor-pointer text-sm text-neutral-100 focus:text-neutral-100 focus:bg-neutral-800"
                     >
                       <div className="w-64 space-y-1">
                         <div className="font-medium text-neutral-50">
@@ -213,7 +225,7 @@ export const ActionSheet = ({ onSelect }: {
           <Button
             className="w-full cursor-pointer bg-white text-xs font-medium text-neutral-900 hover:bg-gray-200"
             disabled={!selectedAction}
-            onClick={() => onSelect(selectedAction as NodeKind, metadata)}
+            onClick={handleCreate}
           >
             Create action
           </Button>
