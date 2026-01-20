@@ -9,7 +9,7 @@ export interface AnimatedShinyTextProps extends ComponentPropsWithoutRef<"span">
 export const AnimatedShinyText: FC<AnimatedShinyTextProps> = ({
   children,
   className,
-  shimmerWidth = 100,
+  shimmerWidth = 300,
   ...props
 }) => {
   return (
@@ -20,13 +20,12 @@ export const AnimatedShinyText: FC<AnimatedShinyTextProps> = ({
         } as CSSProperties
       }
       className={cn(
-        "mx-auto max-w-md text-neutral-600/70 dark:text-neutral-400/70",
+        "mx-auto max-w-md",
 
         // Shine effect
-        "animate-shiny-text [background-size:var(--shiny-width)_100%] bg-clip-text [background-position:0_0] bg-no-repeat [transition:background-position_1s_cubic-bezier(.6,.6,0,1)_infinite]",
-
+        "animate-shiny-text [background-size:var(--shiny-width)_300%] bg-clip-text [background-position:0_0] [animation:shiny-text-animation_3s_infinite]",
         // Shine gradient
-        "bg-gradient-to-r from-transparent via-black/80 via-50% to-transparent dark:via-white/80",
+        "bg-gradient-to-r from-transparent via-100% to-transparent via-white",
 
         className
       )}

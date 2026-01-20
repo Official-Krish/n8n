@@ -138,7 +138,7 @@ const Footer: React.FC = () => {
         {/* Bottom Bar */}
         <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-zinc-800">
           <p className="text-gray-400 text-sm mb-4 md:mb-0">
-            © 2025 N8N Trading. All rights reserved.
+            © 2026 N8N Trading. All rights reserved.
           </p>
           <div className="flex gap-6">
             <a
