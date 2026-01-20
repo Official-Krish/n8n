@@ -1,50 +1,129 @@
 import { OrbitingCircles } from "../ui/orbiting-circles"
 
 export const Start = () => {
-    return (
-        <div className="border-y border-neutral-800">
-            <div className="mx-20 border border-neutral-800 pb-8 bg-neutral-900 shadow-lg">
-                <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-8 p-8">
-                    <div className="flex justify-center">
-                        <OrbitingCirclesComp />
-                    </div>
-                    <div className="text-center md:text-left">
-                        <h1 className="text-white font-bold text-2xl mb-4">
-                            Connect Your Tools and Start Automating
-                        </h1>
-                        <p className="text-neutral-400 text-lg mb-6">
-                            Simplify your workflow by integrating your favorite tools and automating tasks effortlessly.
-                        </p>
-                        <button className="px-4 py-2 mt-4 bg-white text-neutral-800 rounded-lg cursor-pointer hover:bg-gray-200 hover:scale-105 transform transition duration-300"
-                          onClick={() => {
-                            if (localStorage.getItem("token")){
-                              window.location.href = "/dashboard";
-                            } else {
-                              window.location.href = "/signup";
-                            }
-                          }}
-                        >
-                            Get Started
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-};
+  const handleGetStarted = () => {
+    if (typeof window === "undefined") return
 
+    if (localStorage.getItem("token")) {
+      window.location.href = "/dashboard"
+    } else {
+      window.location.href = "/signup"
+    }
+  }
+
+  return (
+    <section className="border-y border-neutral-800 bg-black">
+      <div className="mx-4 md:mx-12 lg:mx-20 my-14 rounded-3xl border border-neutral-800/80 bg-linear-to-br from-neutral-900 via-black to-neutral-950 shadow-[0_0_120px_rgba(0,0,0,0.75)] overflow-hidden">
+        <div className="relative grid grid-cols-1 md:grid-cols-[1.1fr_1fr] items-center gap-10 px-6 py-10 md:px-10 md:py-14">
+          {/* background accents */}
+          <div className="pointer-events-none absolute inset-0">
+            <div className="absolute -top-32 -left-10 h-64 w-64 rounded-full bg-[#f17463]/15 blur-3xl" />
+            <div className="absolute -bottom-40 right-0 h-64 w-64 rounded-full bg-sky-500/10 blur-3xl" />
+          </div>
+
+          {/* copy */}
+          <div className="relative z-10 text-center md:text-left space-y-6">
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-neutral-300">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+              <span>Go from idea to live trading in minutes</span>
+            </div>
+
+            <div className="space-y-4">
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold tracking-tight text-neutral-50">
+                Connect your stack and{" "}
+                <span className="bg-linear-to-r from-[#f17463] to-[#ff9776] bg-clip-text text-transparent">
+                  start automating trades
+                </span>
+                .
+              </h1>
+              <p className="text-sm md:text-base text-neutral-400 max-w-xl mx-auto md:mx-0">
+                Plug in brokers, data feeds, and messaging tools. Build visual workflows
+                that watch markets, run strategies, and execute orders without leaving
+                your browser.
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center md:items-start gap-3 sm:gap-4 justify-center md:justify-start">
+              <button
+                onClick={handleGetStarted}
+                className="inline-flex items-center justify-center rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-neutral-900 shadow-lg shadow-white/10 transition-transform duration-200 hover:scale-[1.03] hover:bg-neutral-100 cursor-pointer"
+              >
+                Start building
+              </button>
+              <button
+                type="button"
+                className="inline-flex items-center justify-center rounded-lg border border-neutral-700/80 bg-black/40 px-5 py-2.5 text-sm font-medium text-neutral-200 hover:bg-neutral-900/70 transition-colors cursor-pointer"
+              >
+                View example workflows
+              </button>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 text-xs text-neutral-500 pt-2 sm:pt-3">
+              <div className="flex items-center gap-2 justify-center md:justify-start">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                <span>Broker-safe. You stay in control of your keys.</span>
+              </div>
+              <div className="flex items-center gap-2 justify-center md:justify-start">
+                <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
+                <span>Drag-and-drop building — no infra to manage.</span>
+              </div>
+            </div>
+          </div>
+
+          {/* visual */}
+            <div className="relative z-10 flex justify-center md:justify-end">
+            <div className="relative flex h-100 w-full max-w-sm flex-col items-center justify-center overflow-hidden rounded-3xl border border-neutral-800 bg-neutral-950/60 shadow-[0_0_60px_rgba(0,0,0,0.85)]">
+              <div className="absolute top-4 z-20 rounded-full border border-white/10 bg-black/70 px-3 py-1 text-[10px] font-medium uppercase tracking-[0.18em] text-neutral-300">
+                    Live Integrations
+              </div>
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(248,250,252,0.12),transparent_55%)]" />
+
+              <div className="relative z-10 flex flex-col items-center gap-4 pt-10">
+                <div className="relative h-32 w-32">
+                  <div className="absolute inset-0 rounded-full bg-black/70 backdrop-blur-md border border-white/10 flex items-center justify-center">
+                    <span className="text-[11px] font-medium text-neutral-200 text-center px-3">
+                      Your trading
+                      <br />
+                      workflow hub
+                    </span>
+                  </div>
+                  <OrbitingCirclesComp />
+                </div>
+
+                <div className="mt-14 grid grid-cols-2 gap-3 text-[10px] text-neutral-400">
+                  <div className="rounded-xl border border-white/5 bg-black/60 px-3 py-2">
+                    <p className="font-medium text-neutral-200 text-xs">
+                      150ms
+                    </p>
+                    <p className="text-[10px]">average strategy latency</p>
+                  </div>
+                  <div className="rounded-xl border border-white/5 bg-black/60 px-3 py-2">
+                    <p className="font-medium text-neutral-200 text-xs">
+                      24 / 7
+                    </p>
+                    <p className="text-[10px]">automation uptime</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
 
 export function OrbitingCirclesComp() {
   return (
-    <div className="relative flex h-125 w-full flex-col items-center justify-center overflow-hidden">
-      <OrbitingCircles iconSize={40}>
+    <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+      <OrbitingCircles iconSize={32} radius={70} speed={2.4}>
         <Icons.whatsapp />
         <Icons.notion />
         <Icons.openai />
         <Icons.googleDrive />
-        <Icons.whatsapp />
+        <Icons.gitHub />
       </OrbitingCircles>
-      <OrbitingCircles iconSize={30} radius={100} reverse speed={2}>
+      <OrbitingCircles iconSize={24} radius={105} reverse speed={3.2}>
         <Icons.whatsapp />
         <Icons.notion />
         <Icons.openai />
@@ -56,7 +135,12 @@ export function OrbitingCirclesComp() {
 
 const Icons = {
   gitHub: () => (
-    <svg width="100" height="100" viewBox="0 0 438.549 438.549">
+    <svg
+      width="100"
+      height="100"
+      viewBox="0 0 438.549 438.549"
+      className="text-white"
+    >
       <path
         fill="currentColor"
         d="M409.132 114.573c-19.608-33.596-46.205-60.194-79.798-79.8-33.598-19.607-70.277-29.408-110.063-29.408-39.781 0-76.472 9.804-110.063 29.408-33.596 19.605-60.192 46.204-79.8 79.8C9.803 148.168 0 184.854 0 224.63c0 47.78 13.94 90.745 41.827 128.906 27.884 38.164 63.906 64.572 108.063 79.227 5.14.954 8.945.283 11.419-1.996 2.475-2.282 3.711-5.14 3.711-8.562 0-.571-.049-5.708-.144-15.417a2549.81 2549.81 0 01-.144-25.406l-6.567 1.136c-4.187.767-9.469 1.092-15.846 1-6.374-.089-12.991-.757-19.842-1.999-6.854-1.231-13.229-4.086-19.13-8.559-5.898-4.473-10.085-10.328-12.56-17.556l-2.855-6.57c-1.903-4.374-4.899-9.233-8.992-14.559-4.093-5.331-8.232-8.945-12.419-10.848l-1.999-1.431c-1.332-.951-2.568-2.098-3.711-3.429-1.142-1.331-1.997-2.663-2.568-3.997-.572-1.335-.098-2.43 1.427-3.289 1.525-.859 4.281-1.276 8.28-1.276l5.708.853c3.807.763 8.516 3.042 14.133 6.851 5.614 3.806 10.229 8.754 13.846 14.842 4.38 7.806 9.657 13.754 15.846 17.847 6.184 4.093 12.419 6.136 18.699 6.136 6.28 0 11.704-.476 16.274-1.423 4.565-.952 8.848-2.383 12.847-4.285 1.713-12.758 6.377-22.559 13.988-29.41-10.848-1.14-20.601-2.857-29.264-5.14-8.658-2.286-17.605-5.996-26.835-11.14-9.235-5.137-16.896-11.516-22.985-19.126-6.09-7.614-11.088-17.61-14.987-29.979-3.901-12.374-5.852-26.648-5.852-42.826 0-23.035 7.52-42.637 22.557-58.817-7.044-17.318-6.379-36.732 1.997-58.24 5.52-1.715 13.706-.428 24.554 3.853 10.85 4.283 18.794 7.952 23.84 10.994 5.046 3.041 9.089 5.618 12.135 7.708 17.705-4.947 35.976-7.421 54.818-7.421s37.117 2.474 54.823 7.421l10.849-6.849c7.419-4.57 16.18-8.758 26.262-12.565 10.088-3.805 17.802-4.853 23.134-3.138 8.562 21.509 9.325 40.922 2.279 58.24 15.036 16.18 22.559 35.787 22.559 58.817 0 16.178-1.958 30.497-5.853 42.966-3.9 12.471-8.941 22.457-15.125 29.979-6.191 7.521-13.901 13.85-23.131 18.986-9.232 5.14-18.182 8.85-26.84 11.136-8.662 2.286-18.415 4.004-29.263 5.146 9.894 8.562 14.842 22.077 14.842 40.539v60.237c0 3.422 1.19 6.279 3.572 8.562 2.379 2.279 6.136 2.95 11.276 1.995 44.163-14.653 80.185-41.062 108.068-79.226 27.88-38.161 41.825-81.126 41.825-128.906-.01-39.771-9.818-76.454-29.414-110.049z"
@@ -89,7 +173,7 @@ const Icons = {
       height="100"
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"
-      className="fill-black dark:fill-white"
+      className="fill-white"
     >
       <path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0804 4.7783-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4945 4.4944zm-9.6607-4.1254a4.4708 4.4708 0 0 1-.5346-3.0137l.142.0852 4.783 2.7582a.7712.7712 0 0 0 .7806 0l5.8428-3.3685v2.3324a.0804.0804 0 0 1-.0332.0615L9.74 19.9502a4.4992 4.4992 0 0 1-6.1408-1.6464zM2.3408 7.8956a4.485 4.485 0 0 1 2.3655-1.9728V11.6a.7664.7664 0 0 0 .3879.6765l5.8144 3.3543-2.0201 1.1685a.0757.0757 0 0 1-.071 0l-4.8303-2.7865A4.504 4.504 0 0 1 2.3408 7.872zm16.5963 3.8558L13.1038 8.364 15.1192 7.2a.0757.0757 0 0 1 .071 0l4.8303 2.7913a4.4944 4.4944 0 0 1-.6765 8.1042v-5.6772a.79.79 0 0 0-.407-.667zm2.0107-3.0231l-.142-.0852-4.7735-2.7818a.7759.7759 0 0 0-.7854 0L9.409 9.2297V6.8974a.0662.0662 0 0 1 .0284-.0615l4.8303-2.7866a4.4992 4.4992 0 0 1 6.6802 4.66zM8.3065 12.863l-2.02-1.1638a.0804.0804 0 0 1-.038-.0567V6.0742a4.4992 4.4992 0 0 1 7.3757-3.4537l-.142.0805L8.704 5.459a.7948.7948 0 0 0-.3927.6813zm1.0976-2.3654l2.602-1.4998 2.6069 1.4998v2.9994l-2.5974 1.4997-2.6067-1.4997Z" />
     </svg>

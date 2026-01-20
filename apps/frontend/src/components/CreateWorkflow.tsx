@@ -243,7 +243,7 @@ export const CreateWorkflow = () => {
 
           <button
             type="button"
-            className="absolute right-4 top-4 z-20 rounded-full border border-neutral-800 bg-neutral-950/80 px-3 py-1 text-[11px] font-medium text-neutral-200 hover:bg-neutral-900/90"
+            className="absolute right-4 top-4 z-20 rounded-full border border-neutral-800 bg-neutral-950/80 px-3 py-1 text-[11px] font-medium text-neutral-200 hover:bg-neutral-900/90 cursor-pointer"
             onClick={() => setIsFullscreen((prev) => !prev)}
           >
             {isFullscreen ? "Close full screen" : "Full screen"}

@@ -43,7 +43,9 @@ export function Auth({ mode }: { mode: "signin" | "signup" }) {
         {/* Left Content Section */}
         <div className="flex-1 space-y-6 text-neutral-200">
           <div className="space-y-4">
-            <h1 className="text-5xl font-bold bg-linear-to-r from-purple-400 via-pink-400 to-orange-400 bg-clip-text text-transparent">
+            <h1
+              className="text-5xl font-bold bg-gradient-to-r from-[#f17463] via-[#f4937d] to-[#fde1d6] bg-clip-text text-transparent"
+            >
               {mode === "signin" ? "Welcome Back" : "Get Started"}
             </h1>
             <p className="text-xl text-neutral-400">

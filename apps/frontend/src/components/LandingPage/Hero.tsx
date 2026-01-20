@@ -18,8 +18,24 @@ export const Hero = () => {
                         <button className="bg-white text-neutral-800 font-normal px-6 py-2 cursor-pointer rounded-lg">Start Building</button>
                         <button className="bg-black text-neutral-200 font-normal px-6 py-2 cursor-pointer rounded-lg border border-neutral-700 hover:bg-neutral-800 transistion duration-200">View Pricing</button>
                     </div>
-                    <div>
-                        <h1 className="text-neutral-500 tracking-tight">Innovative AI Solution 2026 by <span className="text-neutral-200 ml-1"> N8N Trading</span></h1>
+                    <div className="mt-8 flex flex-col items-center">
+                        <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-gradient-to-r from-[#18181b] via-[#26262c] to-[#18181b] border border-neutral-700 shadow-inner shadow-[#f1746333]/5">
+                            <span className="text-xs font-semibold text-[#f17463] tracking-[.18em] uppercase">
+                                Trusted by Quants
+                            </span>
+                            <span className="mx-1 text-xs text-neutral-400">·</span>
+                            <span className="text-xs text-neutral-300 font-medium">
+                                Lightning-fast strategy builder
+                            </span>
+                            <span className="mx-1 text-xs text-neutral-400">·</span>
+                            <span className="text-xs font-semibold text-neutral-100">
+                                N8N Trading
+                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="ml-2 w-4 h-4 text-[#f17463]" viewBox="0 0 24 24" fill="none">
+                                <circle cx="12" cy="12" r="10" stroke="#f17463" strokeWidth="2" fill="currentColor" fillOpacity="0.15"/>
+                                <path d="M8 12l2 2l4 -4" stroke="#f17463" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                            </svg>
+                        </div>
                     </div>
                 </div>
             </div>

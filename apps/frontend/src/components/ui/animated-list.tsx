@@ -26,45 +26,59 @@ export function AnimatedListItem({ children }: { children: React.ReactNode }) {
 export interface AnimatedListProps extends ComponentPropsWithoutRef<"div"> {
   children: React.ReactNode
   delay?: number
+  isActive?: boolean
 }
 
 export const AnimatedList = React.memo(
-  ({ children, className, delay = 1000, ...props }: AnimatedListProps) => {
+  ({
+    children,
+    className,
+    delay = 1000,
+    isActive = true,
+    ...props
+  }: AnimatedListProps) => {
     const [index, setIndex] = useState(0)
     const childrenArray = useMemo(
       () => React.Children.toArray(children),
       [children]
     )
 
-    useEffect(() => {
-      if (index < childrenArray.length - 1) {
-        const timeout = setTimeout(() => {
-          setIndex((prevIndex) => (prevIndex + 1) % childrenArray.length)
-        }, delay)
+  useEffect(() => {
+    // Do not animate until explicitly activated or when there are no items.
+    if (!isActive || childrenArray.length === 0) return
 
-        return () => clearTimeout(timeout)
-      }
-    }, [index, delay, childrenArray.length])
+    // Once all items are visible, stop advancing.
+    if (index >= childrenArray.length - 1) return
+
+    const timeout = setTimeout(() => {
+      setIndex((prevIndex) => prevIndex + 1)
+    }, delay)
+
+    return () => clearTimeout(timeout)
+  }, [index, isActive, delay, childrenArray.length])
 
     const itemsToShow = useMemo(() => {
       const result = childrenArray.slice(0, index + 1).reverse()
       return result
     }, [index, childrenArray])
 
-    return (
-      <div
-        className={cn(`flex flex-col items-center gap-4`, className)}
-        {...props}
-      >
-        <AnimatePresence>
-          {itemsToShow.map((item) => (
-            <AnimatedListItem key={(item as React.ReactElement).key}>
-              {item}
-            </AnimatedListItem>
-          ))}
-        </AnimatePresence>
-      </div>
-    )
+  return (
+    <div
+      className={cn(
+        "flex flex-col items-center gap-4 rounded-2xl bg-linear-to-b from-neutral-900/60 to-black/80 p-4 backdrop-blur",
+        className
+      )}
+      {...props}
+    >
+      <AnimatePresence>
+        {itemsToShow.map((item) => (
+          <AnimatedListItem key={(item as React.ReactElement).key}>
+            {item}
+          </AnimatedListItem>
+        ))}
+      </AnimatePresence>
+    </div>
+  )
   }
 )
 

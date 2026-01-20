@@ -4,7 +4,9 @@ import {
   IconFileBroken,
   IconSignature,
   IconTableColumn,
-} from "@tabler/icons-react";
+} from "@tabler/icons-react"
+
+import { UseCaseSkeleton } from "./UseCaseSkeleton"
 
 export const UseCase = () => {
     return (
@@ -32,28 +34,25 @@ export const UseCase = () => {
     )
 }
 
-const Skeleton = () => (
-  <div className="flex flex-1 w-full h-full min-h-24 rounded-xl   bg-dot-white/[0.2] bg-dot-black/[0.2] mask-[radial-gradient(ellipse_at_center,white,transparent)]  border border-white/20 bg-black"></div>
-);
 const items = [
   {
     title: "Strategy Research",
     description: "Build and experiment with trading logic using indicators, conditions, and AI agents.",
-    header: <Skeleton />,
+    header: <UseCaseSkeleton variant="research" />,
     className: "md:col-span-2",
     icon: <IconClipboardCopy className="h-4 w-4 text-neutral-500" />,
   },
   {
     title: "Backtesting & Validation",
     description: "Test strategies on historical market data before deploying them live.",
-    header: <Skeleton />,
+    header: <UseCaseSkeleton variant="backtest" />,
     className: "md:col-span-1",
     icon: <IconFileBroken className="h-4 w-4 text-neutral-500" />,
   },
   {
     title: "Automated Execution",
     description: "Execute trades automatically through broker integrations with defined risk controls.",
-    header: <Skeleton />,
+    header: <UseCaseSkeleton variant="execution" />,
     className: "md:col-span-1",
     icon: <IconSignature className="h-4 w-4 text-neutral-500" />,
   },
@@ -61,7 +60,7 @@ const items = [
     title: "Options & F&O Strategies",
     description:
       "Model complex options, spreads, and derivatives workflows visually.",
-    header: <Skeleton />,
+    header: <UseCaseSkeleton variant="options" />,
     className: "md:col-span-2",
     icon: <IconTableColumn className="h-4 w-4 text-neutral-500" />,
   },

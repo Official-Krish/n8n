@@ -34,7 +34,11 @@ export const Appbar = () => {
     return (
         <div className="fixed top-0 left-0 right-0 z-50">
             <motion.div 
-                className={`w-full px-4 py-2 ${scrolled ? "rounded-full border border-neutral-800" : "rounded-xl border-b border-neutral-800"}`}
+                className={`w-full px-4 py-2 ${
+                    scrolled 
+                        ? "rounded-full border border-neutral-800 bg-black" 
+                        : "rounded-xl border-b border-neutral-800"
+                }`}
                 animate={{
                     width: scrolled ? "60%" : "100%",
                     transition: { 
