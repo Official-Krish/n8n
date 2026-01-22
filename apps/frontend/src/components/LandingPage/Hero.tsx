@@ -1,11 +1,11 @@
-import { AnimatedShinyText } from "../ui/animated-shiny-text"
+import ShimmeringText from "../ui/shimmer-text"
 
 export const Hero = () => {
     return (
         <div className="border-y border-neutral-800">
             <div className="h-150 mx-20 border-x border-neutral-800">
                 <div className="pt-40 flex flex-col items-center gap-6">
-                    <AnimatedShinyText shimmerWidth={50} className="text-[#f17463]">For serious traders and quant teams</AnimatedShinyText>
+                    <ShimmeringText duration={0.3} text="For serious traders and quant teams" className="text-[#f17463] text-sm font-normal tracking-widest" />
                     <div className="max-w-2xl flex justify-center text-center">
                         <h1 className="text-white font-medium text-6xl">
                             Visual automation for trading <span className="text-[#f17463]">strategies</span>
