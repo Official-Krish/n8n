@@ -74,6 +74,10 @@ const WorkflowNodeSchema = new Schema({
 })
 
 const WorkflowSchema = new Schema({
+    workflowName: {
+        type: String,
+        required: true,
+    },
     userId: {
         type: mongoose.Types.ObjectId,
         ref: 'Users',

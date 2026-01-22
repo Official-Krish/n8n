@@ -14,6 +14,7 @@ workFlowRouter.post('/', authMiddleware, async (req, res) => {
     }
     try {
         const workflow = await WorkflowModel.create({
+            workflowName: data.workflowName,
             userId,
             nodes: data.nodes,
             edges: data.edges

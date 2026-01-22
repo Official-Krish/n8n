@@ -21,6 +21,9 @@ import {
   apiUpdateWorkflow,
 } from "@/http";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
+import { DialogDescription } from "@radix-ui/react-dialog";
+import { Input } from "./ui/input";
 
 const nodeTypes = {
   "price-trigger": PriceTrigger,
@@ -41,7 +44,9 @@ export const CreateWorkflow = () => {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [showTriggerSheet, setShowTriggerSheet] = useState(false);
+  const [showNameDialog, setShowNameDialog] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [workflowName, setWorkflowName] = useState<string>("");
   const [selectedAction, setSelectedAction] = useState<{
     position: { x: number; y: number };
     startingNodeId: string;
@@ -146,7 +151,7 @@ export const CreateWorkflow = () => {
     setSaveError(null);
     setSaving(true);
     try {
-      const payload = { nodes, edges };
+      const payload = { workflowName, nodes, edges };
       if (!workflowId) {
         const res = await apiCreateWorkflow(payload);
         if (!res.workflowId) throw new Error("Missing workflowId from server");
@@ -162,6 +167,14 @@ export const CreateWorkflow = () => {
       setSaving(false);
     }
   }, [nodes, edges, workflowId]);
+
+  const handleNameDialogSubmit = () => {
+    if (workflowName.trim()) {
+      setWorkflowName(workflowName.trim());
+      setShowNameDialog(false);
+      setShowTriggerSheet(true);
+    }
+  };
 
   return (
     <div className="bg-black min-h-screen w-full text-white pt-24 pb-8 px-6 md:px-10">
@@ -200,7 +213,7 @@ export const CreateWorkflow = () => {
                   variant="default"
                   onClick={onSave}
                   disabled={!canSave || saving}
-                  className="mt-1 bg-white px-5 py-2 text-xs font-medium text-neutral-900 hover:bg-gray-200 md:text-sm"
+                  className="mt-1 bg-white px-5 py-2 text-xs font-medium text-neutral-900 hover:bg-gray-200 md:text-sm cursor-pointer"
                 >
                   {saving
                     ? "Saving..."
@@ -270,9 +283,9 @@ export const CreateWorkflow = () => {
               </p>
               <Button
                 className="mt-2 bg-white px-4 py-2 text-xs font-medium text-neutral-900 hover:bg-gray-200 md:text-sm cursor-pointer"
-                onClick={() => setShowTriggerSheet(true)}
+                onClick={() => setShowNameDialog(true)}
               >
-                + Add first trigger
+                + Add your trigger
               </Button>
             </div>
           )}
@@ -284,6 +297,46 @@ export const CreateWorkflow = () => {
           >
             {isFullscreen ? "Close full screen" : "Full screen"}
           </button>
+
+            <Dialog open={showNameDialog} onOpenChange={setShowNameDialog}>
+              <DialogContent className="bg-neutral-900 text-neutral-200 border border-neutral-800 max-w-md">
+                <DialogHeader>
+                  <DialogTitle className="text-neutral-100">Name your workflow</DialogTitle>
+                  <DialogDescription className="text-neutral-400">
+                    Give your workflow a descriptive name to identify it later.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="py-4">
+                  <Input
+                    value={workflowName}
+                    onChange={(e) => setWorkflowName(e.target.value)}
+                    placeholder="e.g., NIFTY Swing Trading Strategy"
+                    className="bg-neutral-800 text-neutral-200 placeholder-neutral-500"
+                    onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleNameDialogSubmit();
+                    }
+                    }}
+                    autoFocus
+                  />
+                </div>
+                <DialogFooter>
+                    <button
+                      onClick={() => setShowNameDialog(false)}
+                      className="px-4 py-2 text-sm font-medium text-neutral-400 bg-neutral-800 border border-neutral-700 rounded-lg hover:bg-neutral-700 hover:text-neutral-200 transition-colors cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleNameDialogSubmit}
+                      disabled={!workflowName.trim()}
+                      className="px-4 py-2 ml-2 text-sm font-medium text-neutral-900 bg-neutral-100 rounded-lg hover:scale-103 disabled:opacity-50 transform transition duration-300 cursor-pointer"
+                    >
+                      Continue
+                    </button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
 
           {isFullscreen && (
             <div className="absolute left-4 top-4 z-20 flex items-center gap-2">

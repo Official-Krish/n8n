@@ -13,6 +13,7 @@ export interface SigninResponse {
 
 export interface Workflow {
   _id: string;
+  workflowName: string;
   nodes: any[];
   edges: any[];
 }

@@ -11,6 +11,7 @@ export const SigninSchema = z.object({
 });
 
 export const CreateWorkflowSchema = z.object({
+    workflowName: z.string().min(3).max(100),
     nodes: z.array(z.object({
         nodeId: z.string().optional(),
         type: z.string().optional(),

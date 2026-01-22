@@ -60,7 +60,7 @@ export const Dashboard = () => {
           </div>
           <div className="flex flex-col items-end gap-3">
             <Button
-              className="bg-white px-5 py-2 text-xs font-medium text-neutral-900 hover:bg-gray-200 md:text-sm"
+              className="bg-white px-5 py-2 text-xs font-medium text-neutral-900 hover:bg-gray-200 md:text-sm cursor-pointer"
               onClick={() => navigate("/create")}
             >
               + Create new workflow
@@ -154,7 +154,7 @@ export const Dashboard = () => {
                   >
                     <div className="flex flex-col gap-1">
                       <span className="font-medium text-neutral-50">
-                        Workflow {idx + 1}
+                        {wf.workflowName || "Untitled Workflow"}
                       </span>
                       <span className="font-mono text-[11px] text-neutral-500">
                         {wf._id}
