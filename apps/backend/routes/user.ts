@@ -68,4 +68,8 @@ userRouter.get('/profile', authMiddleware, async (req, res) => {
     }
 });
 
+userRouter.get('/verify', authMiddleware, (req, res) => {
+    res.status(200).json({ message: "Token is valid" });
+});
+
 export default userRouter;
