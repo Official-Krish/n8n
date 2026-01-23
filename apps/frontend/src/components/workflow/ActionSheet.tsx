@@ -21,8 +21,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { useState } from "react";
-import { Input } from "./ui/input";
+import { useEffect, useState } from "react";
+import { Input } from "../ui/input";
 import { SUPPORTED_ASSETS } from "@n8n-trading/types";
 
 const SUPPORTED_ACTIONS = [
@@ -42,13 +42,35 @@ export const ActionSheet = ({
   onSelect,
   open,
   onOpenChange,
+  initialKind,
+  initialMetadata,
+  submitLabel,
+  title,
 }: {
   onSelect: (kind: NodeKind, metadata: NodeMetadata) => void;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  initialKind?: NodeKind;
+  initialMetadata?: NodeMetadata;
+  submitLabel?: string;
+  title?: string;
 }) => {
   const [metadata, setMetadata] = useState<TradingMetadata | {}>({});
   const [selectedAction, setSelectedAction] = useState("");
+
+  useEffect(() => {
+    if (open) {
+      if (initialKind && (["zerodha", "groww"] as unknown as NodeKind[]).includes(initialKind)) {
+        setSelectedAction(initialKind);
+      }
+      if (initialMetadata) {
+        setMetadata((current) => ({
+          ...(current || {}),
+          ...(initialMetadata as TradingMetadata),
+        }));
+      }
+    }
+  }, [open, initialKind, initialMetadata]);
 
   const handleCreate = () => {
     if (!selectedAction) return;
@@ -62,7 +84,7 @@ export const ActionSheet = ({
         <SheetHeader className="gap-4 p-5">
           <div className="space-y-1">
             <SheetTitle className="text-base font-medium text-neutral-50">
-              Select broker action
+              {title ?? "Select broker action"}
             </SheetTitle>
             <SheetDescription className="text-xs text-neutral-400">
               Connect this step of your workflow to a live brokerage
@@ -76,6 +98,7 @@ export const ActionSheet = ({
             </p>
             <Select
               onValueChange={(value) => setSelectedAction(value as string)}
+              value={selectedAction || undefined}
             >
               <SelectTrigger className="w-full border-neutral-800 bg-neutral-900 text-sm text-neutral-100">
                 <SelectValue placeholder="Select an action" />
@@ -227,7 +250,7 @@ export const ActionSheet = ({
             disabled={!selectedAction}
             onClick={handleCreate}
           >
-            Create action
+            {submitLabel ?? "Create action"}
           </Button>
         </SheetFooter>
       </SheetContent>

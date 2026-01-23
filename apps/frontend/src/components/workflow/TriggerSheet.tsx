@@ -22,8 +22,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { useState } from "react";
-import { Input } from "./ui/input";
+import { useEffect, useState } from "react";
+import { Input } from "../ui/input";
 import { SUPPORTED_ASSETS } from "@n8n-trading/types";
 
 const SUPPORTED_TRIGGERS = [
@@ -44,10 +44,18 @@ export const TriggerSheet = ({
   onSelect,
   open,
   onOpenChange,
+  initialKind,
+  initialMetadata,
+  submitLabel,
+  title,
 }: {
   onSelect: (kind: NodeKind, metadata: NodeMetadata) => void;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  initialKind?: NodeKind;
+  initialMetadata?: NodeMetadata;
+  submitLabel?: string;
+  title?: string;
 }) => {
   const [metadata, setMetadata] = useState<
     PriceTriggerNodeMetadata | TimerNodeMetadata
@@ -55,6 +63,21 @@ export const TriggerSheet = ({
     time: 3600,
   });
   const [selectedTrigger, setSelectedTrigger] = useState("");
+
+  // Initialize state when opening or when initial values change
+  useEffect(() => {
+    if (open) {
+      if (initialKind && (["zerodha", "groww"] as unknown as NodeKind[]).includes(initialKind)) {
+        setSelectedTrigger(initialKind);
+      }
+      if (initialMetadata) {
+        setMetadata((current) => ({
+          ...(current || {}),
+          ...(initialMetadata as PriceTriggerNodeMetadata | TimerNodeMetadata),
+        }));
+      }
+    }
+  }, [open, initialKind, initialMetadata]);
 
   const handleCreate = () => {
     if (!selectedTrigger) return;
@@ -68,7 +91,7 @@ export const TriggerSheet = ({
         <SheetHeader className="gap-4 p-5">
           <div className="space-y-1">
             <SheetTitle className="text-base font-medium text-neutral-50">
-              Select trigger
+              {title ?? "Select trigger"}
             </SheetTitle>
             <SheetDescription className="text-xs text-neutral-400">
               Choose how this workflow should start. You can always come back
@@ -82,6 +105,7 @@ export const TriggerSheet = ({
             </p>
             <Select
               onValueChange={(value) => setSelectedTrigger(value as string)}
+              value={selectedTrigger || undefined}
             >
               <SelectTrigger className="w-full border-neutral-800 bg-neutral-900 text-sm text-neutral-100">
                 <SelectValue placeholder="Select a trigger" />
@@ -203,7 +227,7 @@ export const TriggerSheet = ({
             disabled={!selectedTrigger}
             onClick={handleCreate}
           >
-            Create trigger
+            {submitLabel ?? "Create trigger"}
           </Button>
         </SheetFooter>
       </SheetContent>
