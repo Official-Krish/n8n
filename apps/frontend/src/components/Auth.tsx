@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiSignin, apiSignup } from "@/http";
+import { AVATAR_OPTIONS } from "@/lib/utils";
 
 import {
   Card,
@@ -17,7 +18,9 @@ import { ShineBorder } from "@/components/ui/shine-border";
 export function Auth({ mode }: { mode: "signin" | "signup" }) {
   const nav = useNavigate();
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [selectedAvatar, setSelectedAvatar] = useState(AVATAR_OPTIONS[0]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -26,9 +29,20 @@ export function Auth({ mode }: { mode: "signin" | "signup" }) {
     setLoading(true);
     try {
       if (mode === "signup") {
-        await apiSignup({ username, password });
+        const res = await apiSignup({
+          username,
+          email,
+          password,
+          avatarUrl: selectedAvatar,
+        });
+        if ('status' in res && res.status === 409) {
+          setError("Username already exists");
+          setLoading(false);
+          return;
+        }
       }
       await apiSignin({ username, password });
+
       nav("/create");
     } catch (e: any) {
       setError(e?.response?.data?.message ?? e?.message ?? "Request failed");
@@ -118,6 +132,23 @@ export function Auth({ mode }: { mode: "signin" | "signup" }) {
 
             <CardContent>
               <div className="grid gap-4">
+                {mode === "signup" && (
+                  <div className="grid gap-2">
+                    <Label htmlFor="email" className="text-neutral-200">
+                      Email
+                    </Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Email address"
+                      autoComplete="email"
+                      className="text-neutral-200"
+                    />
+                  </div>
+                )}
+
                 <div className="grid gap-2">
                   <Label htmlFor="username" className="text-neutral-200">
                     Username
@@ -126,7 +157,7 @@ export function Auth({ mode }: { mode: "signin" | "signup" }) {
                     id="username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Email or username"
+                    placeholder="Username"
                     autoComplete="username"
                     className="text-neutral-200"
                   />
@@ -149,6 +180,46 @@ export function Auth({ mode }: { mode: "signin" | "signup" }) {
                   />
                 </div>
 
+                {mode === "signup" && (
+                  <div className="grid gap-2">
+                    <Label className="text-neutral-200">Select Avatar</Label>
+                    <div className="flex flex-wrap gap-3">
+                      {AVATAR_OPTIONS.map((avatar, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => setSelectedAvatar(avatar)}
+                          className={`relative rounded-full p-0.5 transition-all ${
+                            selectedAvatar === avatar
+                              ? "ring-2 ring-primary ring-offset-2 ring-offset-black"
+                              : "hover:ring-2 hover:ring-gray-500 hover:ring-offset-2 hover:ring-offset-black"
+                          }`}
+                        >
+                          <div className="h-12 w-12 rounded-full overflow-hidden">
+                            <img src={avatar} alt={`Avatar option ${idx + 1}`} />
+                          </div>
+                          {selectedAvatar === avatar && (
+                            <span className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-black">
+                              <svg
+                                className="h-3 w-3"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M5 13l4 4L19 7"
+                                />
+                              </svg>
+                            </span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {error && <div className="text-sm text-red-600">{error}</div>}
               </div>
             </CardContent>
@@ -157,7 +228,12 @@ export function Auth({ mode }: { mode: "signin" | "signup" }) {
               <button
                 className="w-full bg-white py-2 rounded-lg cursor-pointer text-neutral-800 font-normal disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 transition-transform text-center"
                 onClick={onSubmit}
-                disabled={loading || !username || !password}
+                disabled={
+                  loading ||
+                  !username ||
+                  !password ||
+                  (mode === "signup" && !email)
+                }
               >
                 {loading
                   ? "Working..."

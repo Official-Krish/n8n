@@ -5,6 +5,7 @@ import { Auth } from "./components/Auth";
 import { Landing } from "./components/Landing";
 import { Dashboard } from "./components/Dashboard";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import Profile from "./components/Profile";
 
 export function App() {
   return (
@@ -36,7 +37,16 @@ export function App() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
+    
   );
 }
 

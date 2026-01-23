@@ -15,6 +15,10 @@ export function setAuthToken(token: string) {
   api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 }
 
+export function setAvatarUrl(avatarUrl: string) {
+  localStorage.setItem("avatarUrl", avatarUrl);
+}
+
 const existing = localStorage.getItem("token");
 if (existing) {
   api.defaults.headers.common["Authorization"] = `Bearer ${existing}`;
@@ -22,11 +26,17 @@ if (existing) {
 
 // AUTH
 
-export async function apiSignup(body: { username: string; password: string }): Promise<IdResponse> {
+export async function apiSignup(body: { username: string; password: string, email: string, avatarUrl: string }): Promise<IdResponse | { status: number }> {
   const res = await api.post<IdResponse>("/user/signup", body);
   if (res.data.token) {
     setAuthToken(res.data.token);
-  } else {
+    setAvatarUrl(body.avatarUrl);
+  } else if (res.status === 409) {
+    return {
+      status: res.status
+    };
+  }
+  else {
     throw new Error("No token received");
   }
   return res.data;
@@ -38,11 +48,30 @@ export async function apiSignin(body: { username: string; password: string }): P
     throw new Error("No token received");
   }
   setAuthToken(res.data.token);
+  setAvatarUrl(res.data.avatarUrl);
   return res.data;
 }
 
 export async function apiVerifyToken(): Promise<{ message: string }> {
   const res = await api.get<{ message: string }>("/user/verify", {
+    headers: {
+      Authorization: localStorage.getItem("token") || "",
+    },
+  });
+  return res.data;
+}
+
+export async function apiGetProfile(): Promise<{ username: string; email: string; avatarUrl: string, totalWorkflows: number, memberSince: string }> {
+  const res = await api.get<{ username: string; email: string; avatarUrl: string, totalWorkflows: number, memberSince: string }>("/user/profile", {
+    headers: {
+      Authorization: localStorage.getItem("token") || "",
+    },
+  });
+  return res.data;
+}
+
+export async function apiUpdateProfile(body: { email?: string; avatarUrl: string }): Promise<{ message: string }> {
+  const res = await api.post<{ message: string }>("/user/update-avatar", body, {
     headers: {
       Authorization: localStorage.getItem("token") || "",
     },

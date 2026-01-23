@@ -9,6 +9,7 @@ export interface SigninResponse {
   message: string;
   userId: string;
   token: string;
+  avatarUrl: string;
 }
 
 export interface Workflow {

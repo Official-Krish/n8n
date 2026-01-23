@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { SigninSchema, SignupSchema } from "@n8n-trading/types/metadata";
-import { UserModel } from '@n8n-trading/db/client';
+import { UserModel, WorkflowModel } from '@n8n-trading/db/client';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { authMiddleware } from '../middleware';
@@ -17,10 +17,17 @@ userRouter.post('/signup', async (req, res) => {
     }
 
     try {
+        const checkUniqueness = await UserModel.findOne({ username: parsedData.data.username });
+        if (checkUniqueness) {
+            res.status(409).json({ message: "User already exists" });
+            return;
+        }
         const hashedPassword = await bcrypt.hash(parsedData.data.password, 10);
         const user = await UserModel.create({
             username: parsedData.data.username,
             password: hashedPassword,
+            email: parsedData.data.email,
+            createdAt: new Date(),
         })
         const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1w' });
         res.status(200).json({ message: "User created", userId: user._id, token });
@@ -46,7 +53,7 @@ userRouter.post('/signin', (req, res) => {
             return;
         }
         const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1w' });
-        res.status(200).json({ message: "Signin successful", userId: user._id, token });
+        res.status(200).json({ message: "Signin successful", userId: user._id, token, avatarUrl: user.avatarUrl});
     }).catch((error) => {
         res.status(500).json({ message: "Internal server error", error });
     });
@@ -62,7 +69,29 @@ userRouter.get('/profile', authMiddleware, async (req, res) => {
             res.status(404).json({ message: "User not found" });
             return;
         }
-        res.status(200).json({ message: "User profile retrieved", user });
+        const totalWorkflows = await WorkflowModel.countDocuments({ userId: userId });
+        res.status(200).json({ message: "User profile retrieved", username: user.username, email: user.email, avatarUrl: user.avatarUrl, totalWorkflows, memberSince: user.createdAt.toDateString() });
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error", error });
+    }
+});
+
+userRouter.post("/update-avatar", authMiddleware, async (req, res) => {
+    const userId = req.userId;
+    const { avatarUrl } = req.body;
+
+    if (typeof avatarUrl !== 'string') {
+        res.status(400).json({ message: "Invalid avatar URL" });
+        return;
+    }
+
+    try {
+        const user = await UserModel.findByIdAndUpdate(userId, { avatarUrl }, { new: true });
+        if (!user) {
+            res.status(404).json({ message: "User not found" });
+            return;
+        }
+        res.status(200).json({ message: "Avatar updated", avatarUrl: user.avatarUrl });
     } catch (error) {
         res.status(500).json({ message: "Internal server error", error });
     }

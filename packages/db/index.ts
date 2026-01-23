@@ -10,6 +10,18 @@ const UserSchema = new Schema({
         type: String,
         required: true,
     },
+    email: {
+        type: String,
+        required: true,
+    }, 
+    avatarUrl: {
+        type: String,
+        required: false,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    }
 });
 
 const EdgesSchema = new Schema({
