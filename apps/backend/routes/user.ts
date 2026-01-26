@@ -27,6 +27,7 @@ userRouter.post('/signup', async (req, res) => {
             username: parsedData.data.username,
             password: hashedPassword,
             email: parsedData.data.email,
+            avatarUrl: parsedData.data.avatarUrl,
             createdAt: new Date(),
         })
         const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1w' });

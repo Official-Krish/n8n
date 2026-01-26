@@ -25,6 +25,20 @@ export const Appbar = () => {
             link: "/blog",
         }
     ];
+    const navItemsAuth = [
+        {
+          name: "Dashboard",
+          link: "/dashboard",
+        },
+        {
+          name: "Profile",
+          link: "/profile",
+        },
+        {
+          name: "Create Workflow",
+          link: "/create",
+        },
+    ];
     useMotionValueEvent(scrollY, "change", (latest) => {
         if (latest > 40){
             setScrolled(true);
@@ -64,7 +78,21 @@ export const Appbar = () => {
                         <span className="font-medium text-white">N8n Trading</span>
                     </div>
                     <div className="flex items-center max-w-lg">
-                        {navItems.map((item, idx) => (
+                        {localStorage.getItem("token") ? navItemsAuth.map((item, idx) => (
+                            <motion.div
+                                key={item.name}
+                                className="relative px-4 py-2 text-neutral-300 cursor-pointer"
+                                onMouseEnter={() => setHovered(idx)}
+                                onMouseLeave={() => setHovered(null)}
+                                onClick={() => item.link && (window.location.href = item.link)}
+                            >
+                                {hovered === idx && (
+                                    <motion.div className="absolute inset-0 rounded-xl w-full h-full bg-neutral-800" layoutId="nav-item"/>
+                                )}
+                                <span className="relative z-10">{item.name}</span>
+                            </motion.div>
+                        )) : 
+                        navItems.map((item, idx) => (
                             <motion.div
                                 key={item.name}
                                 className="relative px-4 py-2 text-neutral-300 cursor-pointer"

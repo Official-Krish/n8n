@@ -190,30 +190,13 @@ export function Auth({ mode }: { mode: "signin" | "signup" }) {
                           onClick={() => setSelectedAvatar(avatar)}
                           className={`relative rounded-full p-0.5 transition-all ${
                             selectedAvatar === avatar
-                              ? "ring-2 ring-primary ring-offset-2 ring-offset-black"
+                              ? "ring-2 ring-primary ring-offset-2 ring-offset-amber-600"
                               : "hover:ring-2 hover:ring-gray-500 hover:ring-offset-2 hover:ring-offset-black"
                           }`}
                         >
                           <div className="h-12 w-12 rounded-full overflow-hidden">
                             <img src={avatar} alt={`Avatar option ${idx + 1}`} />
                           </div>
-                          {selectedAvatar === avatar && (
-                            <span className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-black">
-                              <svg
-                                className="h-3 w-3"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M5 13l4 4L19 7"
-                                />
-                              </svg>
-                            </span>
-                          )}
                         </button>
                       ))}
                     </div>

@@ -19,16 +19,17 @@ const Profile = () => {
 
   useEffect(() => {
     const loadProfile = async () => {
-      try {
-        const res = await apiGetProfile();
-        setUsername(res.username);
-        setEmail(res.email);
-        setSelectedAvatar(res.avatarUrl);
-        setTotalWorkflows(res.totalWorkflows);
-        setMemberSince(res.memberSince);
-      } catch (err) {
-        console.error(err);
-      }
+        try {
+            const res = await apiGetProfile();
+            setUsername(res.username);
+            setEmail(res.email);
+            setSelectedAvatar(res.avatarUrl);
+            setTotalWorkflows(res.totalWorkflows);
+            setMemberSince(res.memberSince);
+        } catch (err) {
+            localStorage.removeItem("token");
+            navigate("/signin");
+        }
     };
     loadProfile();
   }, []);

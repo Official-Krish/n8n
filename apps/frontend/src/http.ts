@@ -19,11 +19,6 @@ export function setAvatarUrl(avatarUrl: string) {
   localStorage.setItem("avatarUrl", avatarUrl);
 }
 
-const existing = localStorage.getItem("token");
-if (existing) {
-  api.defaults.headers.common["Authorization"] = `Bearer ${existing}`;
-}
-
 // AUTH
 
 export async function apiSignup(body: { username: string; password: string, email: string, avatarUrl: string }): Promise<IdResponse | { status: number }> {
@@ -76,6 +71,9 @@ export async function apiUpdateProfile(body: { email?: string; avatarUrl: string
       Authorization: localStorage.getItem("token") || "",
     },
   });
+  if (res.status === 200) {
+    setAvatarUrl(body.avatarUrl);
+  }
   return res.data;
 }
 
