@@ -83,12 +83,8 @@ workFlowRouter.get('/executions/:workflowId', authMiddleware, async (req, res) =
     const workflowId = req.params.workflowId;
 
     try {
-        const execution = await ExecutionModel.findOne({ workflowId, userId });
-        if (!execution) {
-            res.status(404).json({ message: "Execution not found" });
-            return;
-        }
-        res.status(200).json({ message: "Execution retrieved", execution });
+        const executions = await ExecutionModel.find({ workflowId, userId }).sort({ startTime: -1 });
+        res.status(200).json({ message: "Executions retrieved", executions });
     } catch (error) {
         res.status(500).json({ message: "Internal server error", error });
     }
