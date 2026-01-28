@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Pencil, ChevronRight } from "lucide-react";
+import { Pencil, ChevronRight, Activity } from "lucide-react";
 import type { Workflow } from "@/types/api";
 
 interface WorkflowTableProps {
@@ -76,7 +76,19 @@ export const WorkflowTable = ({ workflows, loading }: WorkflowTableProps) => {
                         <span className="hidden text-sm tabular-nums text-muted-foreground md:block">
                             {wf.edges?.length ?? 0}
                         </span>
-                        <div className="flex justify-end">
+                        <div className="flex justify-end gap-2">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 gap-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted cursor-pointer"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    navigate(`/workflow/${wf._id}/executions`);
+                                }}
+                            >
+                                <Activity className="h-3.5 w-3.5" />
+                                Executions
+                            </Button>
                             <Button
                                 variant="ghost"
                                 size="sm"

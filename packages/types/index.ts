@@ -33,6 +33,8 @@ export interface TradingMetadata {
     qty: number;
     symbol: typeof SUPPORTED_ASSETS[number];
     apiKey: string;
+    accessToken: string;
+    exchange: "NSE" | "BSE";
 }
 
 export const SUPPORTED_ASSETS = ["CDSL", "HDFC", "TCS", "INFY", "RELIANCE"];

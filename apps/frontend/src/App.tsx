@@ -6,6 +6,7 @@ import { Landing } from "./components/Landing";
 import { Dashboard } from "./components/Dashboard";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import Profile from "./components/Profile";
+import { Executions } from "./components/Executions";
 
 export function App() {
   return (
@@ -42,6 +43,14 @@ export function App() {
         element={
           <ProtectedRoute>
             <Profile />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/workflow/:workflowId/executions"
+        element={
+          <ProtectedRoute>
+            <Executions />
           </ProtectedRoute>
         }
       />

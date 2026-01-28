@@ -80,7 +80,7 @@ export const ActionSheet = ({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="border-l border-neutral-800 bg-black text-neutral-50 sm:max-w-md">
+      <SheetContent className="border-l border-neutral-800 bg-black text-neutral-50 sm:max-w-md overflow-auto">
         <SheetHeader className="gap-4 p-5">
           <div className="space-y-1">
             <SheetTitle className="text-base font-medium text-neutral-50">
@@ -204,6 +204,41 @@ export const ActionSheet = ({
 
               <div className="space-y-2">
                 <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-neutral-500">
+                  Exchange
+                </p>
+                <p className="text-xs text-neutral-400">
+                  Select the exchange for trading.
+                </p>
+                <Select
+                  onValueChange={(value) =>
+                    setMetadata((current) => ({
+                      ...current,
+                      exchange: value as "NSE" | "BSE" | "NFO" | "CDS" | "BCD" | "BFO" | "MCX",
+                    }))
+                  }
+                  value={(metadata as TradingMetadata).exchange || "NSE"}
+                >
+                  <SelectTrigger className="w-full border-neutral-800 bg-neutral-900 text-sm text-neutral-100">
+                    <SelectValue placeholder="Select exchange" />
+                  </SelectTrigger>
+                  <SelectContent className="border-neutral-800 bg-neutral-950 text-neutral-100">
+                    <SelectGroup>
+                      <SelectLabel className="text-[11px] uppercase tracking-[0.12em] text-neutral-500">
+                        Exchanges
+                      </SelectLabel>
+                      <SelectItem value="NSE" className="cursor-pointer text-sm text-neutral-100 focus:text-neutral-100 focus:bg-neutral-800">
+                        NSE
+                      </SelectItem>
+                      <SelectItem value="BSE" className="cursor-pointer text-sm text-neutral-100 focus:text-neutral-100 focus:bg-neutral-800">
+                        BSE
+                      </SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-neutral-500">
                   Quantity
                 </p>
                 <p className="text-xs text-neutral-400">
@@ -221,24 +256,47 @@ export const ActionSheet = ({
                   className="mt-1 border-neutral-800 bg-neutral-900 text-sm text-neutral-100"
                 />
               </div>
+              {selectedAction === "zerodha" && 
+                <div className="space-y-2">
+                  <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-neutral-500">
+                    API key
+                  </p>
+                  <p className="text-xs text-neutral-400">
+                    Your broker API key used only when this node runs.
+                  </p>
+                  <Input
+                    type="text"
+                    value={(metadata as TradingMetadata).apiKey || ""}
+                    onChange={(e) =>
+                      setMetadata((current) => ({
+                        ...current,
+                        apiKey: e.target.value,
+                      }))
+                    }
+                    className="mt-1 border-neutral-800 bg-neutral-900 text-sm text-neutral-100"
+                    placeholder="Enter API key"
+                  />
+                </div>
+              }
 
               <div className="space-y-2">
                 <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-neutral-500">
-                  API key
+                  Access Token
                 </p>
                 <p className="text-xs text-neutral-400">
-                  Your broker API key used only when this node runs.
+                  Your broker access token for authentication.
                 </p>
                 <Input
                   type="text"
-                  value={(metadata as TradingMetadata).apiKey}
+                  value={(metadata as TradingMetadata).accessToken || ""}
                   onChange={(e) =>
                     setMetadata((current) => ({
                       ...current,
-                      apiKey: e.target.value,
+                      accessToken: e.target.value,
                     }))
                   }
                   className="mt-1 border-neutral-800 bg-neutral-900 text-sm text-neutral-100"
+                  placeholder="Enter access token"
                 />
               </div>
             </div>

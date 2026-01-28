@@ -1,8 +1,9 @@
-import type {
-  NodeKind,
-  NodeMetadata,
-  PriceTriggerNodeMetadata,
-  TimerNodeMetadata,
+import {
+  SUPPORTED_ASSETS,
+  type NodeKind,
+  type NodeMetadata,
+  type PriceTriggerNodeMetadata,
+  type TimerNodeMetadata,
 } from "@n8n-trading/types";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,7 +25,6 @@ import {
 } from "@/components/ui/sheet";
 import { useEffect, useState } from "react";
 import { Input } from "../ui/input";
-import { SUPPORTED_ASSETS } from "@n8n-trading/types";
 
 const SUPPORTED_TRIGGERS = [
   {
@@ -87,7 +87,7 @@ export const TriggerSheet = ({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="border-l border-neutral-800 bg-black text-neutral-50 sm:max-w-md">
+      <SheetContent className="border-l border-neutral-800 bg-black text-neutral-50 sm:max-w-md overflow-auto">
         <SheetHeader className="gap-4 p-5">
           <div className="space-y-1">
             <SheetTitle className="text-base font-medium text-neutral-50">
@@ -162,6 +162,38 @@ export const TriggerSheet = ({
             <div className="space-y-4 rounded-2xl border border-neutral-800 bg-neutral-950/70 p-3">
               <div className="space-y-2">
                 <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-neutral-500">
+                  Condition
+                </p>
+                <p className="text-xs text-neutral-400">
+                  Run when price is above or below the threshold.
+                </p>
+                <Select
+                  onValueChange={(value) =>
+                    setMetadata((current) => ({
+                      ...current,
+                      condition: value as "above" | "below",
+                    }))
+                  }
+                  value={(metadata as PriceTriggerNodeMetadata).condition || "above"}
+                >
+                  <SelectTrigger className="w-full border-neutral-800 bg-neutral-900 text-sm text-neutral-100">
+                    <SelectValue placeholder="Select condition" />
+                  </SelectTrigger>
+                  <SelectContent className="border-neutral-800 bg-neutral-950 text-neutral-100">
+                    <SelectGroup>
+                      <SelectItem value="above" className="cursor-pointer text-sm">
+                        Above
+                      </SelectItem>
+                      <SelectItem value="below" className="cursor-pointer text-sm">
+                        Below
+                      </SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-neutral-500">
                   Price threshold
                 </p>
                 <p className="text-xs text-neutral-400">
@@ -169,7 +201,7 @@ export const TriggerSheet = ({
                 </p>
                 <Input
                   type="number"
-                  value={(metadata as PriceTriggerNodeMetadata).targetPrice}
+                  value={(metadata as PriceTriggerNodeMetadata).targetPrice || ""}
                   onChange={(e) =>
                     setMetadata((current) => ({
                       ...current,
@@ -177,6 +209,7 @@ export const TriggerSheet = ({
                     }))
                   }
                   className="mt-1 border-neutral-800 bg-neutral-900 text-sm text-neutral-100"
+                  placeholder="Enter price threshold"
                 />
               </div>
 
