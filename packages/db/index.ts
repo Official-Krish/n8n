@@ -128,6 +128,32 @@ const NodesSchema = new Schema({
     credentials: [CreedentialTypeSchema],
 });
 
+const ExrcutionStepSchema = new Schema({
+    step: {
+        type: Number,
+        required: true,
+    },
+    nodeId: {
+        type: String,
+        required: true,
+    },
+    nodeType: {
+        type: String,
+        required: true,
+    },
+    status: {
+        type: String,
+        enum: ["Success", "Failed"],
+        required: true,
+    },
+    message: {
+        type: String,
+        required: true,
+    },
+}, {
+    _id: false,
+});
+
 const ExecutionSchema = new Schema({
     workflowId: {
         type: mongoose.Types.ObjectId,
@@ -141,13 +167,10 @@ const ExecutionSchema = new Schema({
     },
     status: {
         type: String,
-        enum: ["Pending", "InProgress", "Success", "Failed"],
+        enum: ["Success", "Failed", "InProgress"],
         required: true,
     },
-    message: {
-        type: String,
-        default: "Execution completed",
-    },
+    steps: [ExrcutionStepSchema],
     startTime: {
         type: Date,
         default: Date.now,

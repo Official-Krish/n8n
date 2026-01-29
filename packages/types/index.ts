@@ -1,4 +1,4 @@
-export type NodeKind = "price" | "timer" | "Zerodha" | "Groww";
+export type NodeKind = "price" | "timer" | "Zerodha" | "Groww" | "gmail" | "discord";
 
 export interface NodeType {
     type: NodeKind;
@@ -16,7 +16,7 @@ export interface EdgeType {
     target: string;
 }
 
-export type NodeMetadata = TradingMetadata | TimerNodeMetadata | PriceTriggerNodeMetadata | {};
+export type NodeMetadata = TradingMetadata | TimerNodeMetadata | PriceTriggerNodeMetadata | NotificationMetadata | {};
 
 export interface TimerNodeMetadata {
     time: number;
@@ -37,6 +37,12 @@ export interface TradingMetadata {
     exchange: "NSE" | "BSE";
 }
 
+export interface NotificationMetadata {
+    recipientName: string;
+    recipientEmail?: string;
+    webhookUrl?: string;
+}
+
 export const SUPPORTED_ASSETS = ["CDSL", "HDFC", "TCS", "INFY", "RELIANCE"];
 export const assetMapped: Record<string, string> = {
     "CDSL": "CDSL",
@@ -52,3 +58,16 @@ export const assetCompanyName: Record<string, string> = {
     "INFY": "Infosys-Limited",
     "RELIANCE": "Reliance Industries Limited"
 };
+
+export interface ExecutionStep {
+    step: number;
+    nodeId: string;
+    nodeType: string;
+    status: "Success" | "Failed";
+    message: string;
+}
+
+export interface ExecutionResponseType {
+    steps: ExecutionStep[];
+    status: "Success" | "Failed" | "InProgress";
+}
