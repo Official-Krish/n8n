@@ -112,7 +112,7 @@ async function executeWorkflowSafe(workflow: WorkflowType) {
 
     try {
         const res = await executeWorkflow(workflow.nodes, workflow.edges);
-        execution.status = res === "SUCCESS" ? "Success" : "Failed";
+        execution.status = res || "Unknown";
     } catch (err) {
         console.error(`Execution error (${workflow.workflowName})`, err);
         execution.status = "Failed";
