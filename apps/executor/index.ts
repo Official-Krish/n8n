@@ -15,11 +15,6 @@ async function connectDB() {
 }
 
 async function getCurrentPrice(asset: string): Promise<number> {
-    const USER_AGENTS = [
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-    ];
     let config = {
     method: 'get',
     maxBodyLength: Infinity,
@@ -28,13 +23,12 @@ async function getCurrentPrice(asset: string): Promise<number> {
             'accept': '*/*', 
             'accept-language': 'en-GB,en;q=0.9', 
             'referer': `https://www.nseindia.com/get-quote/equity/${assetMapped[asset]}/${assetCompanyName[asset]}`, 
-            'user-agent': USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)], 
+            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36', 
         }
     };
 
     try {
         const response = await axios(config);
-        console.log(response.data.equityResponse[0].orderBook.lastPrice);
         return response.data.equityResponse[0].orderBook.lastPrice;
     } catch (error) {
         console.error(error);
@@ -60,7 +54,10 @@ async function handlePriceTrigger(
     trigger: NodeType
 ): Promise<boolean> {
     const { condition, targetPrice } = trigger.data?.metadata || {};
-    if (!condition || typeof targetPrice !== "number") return false;
+    if (!condition || typeof targetPrice !== "number") {
+        console.error("Invalid price trigger metadata");
+        return false;
+    };
 
     const actions = workflow.nodes.filter(
         (n: any) => n?.data?.kind === "action" || n?.data?.kind === "ACTION"
@@ -88,7 +85,6 @@ async function handlePriceTrigger(
     for (const asset of assets) {
         priceMap[asset as string] = await getCurrentPrice(asset as string);
     }
-
     for (const action of actions) {
         const asset = action.data?.metadata?.symbol;
         const currentPrice = priceMap[asset];
@@ -107,18 +103,24 @@ async function executeWorkflowSafe(workflow: WorkflowType) {
         workflowId: workflow._id,
         userId: workflow.userId,
         status: "InProgress",
-        message: "Workflow execution started",
+        steps: [],
         startTime: new Date(),
     });
 
     try {
         const res = await executeWorkflow(workflow.nodes, workflow.edges);
         execution.status = res.status;
-        execution.message = res.message;
+        execution.set("steps", res.steps);
     } catch (err: any) {
         console.error(`Execution error (${workflow.workflowName})`, err);
         execution.status = "Failed";
-        execution.message = err.message || "Workflow execution failed with an error";
+        execution.set("steps", [{
+            step: 0,
+            nodeId: "",
+            nodeType: "",
+            status: "Failed",
+            message: err.message || "Unknown error",
+        }]);
     } finally {
         execution.endTime = new Date();
         await execution.save();
@@ -137,7 +139,6 @@ async function pollOnce() {
             if (!trigger) continue;
 
             if (!(await canExecute(workflow._id.toString()))) continue;
-
             switch (trigger.type) {
                 case "timer": {
                     const interval = trigger.data?.metadata?.time;
@@ -147,7 +148,6 @@ async function pollOnce() {
                         .sort({ startTime: -1 });
 
                     if (!last || last.startTime.getTime() + interval * 1000 < Date.now()) {
-                        console.log(`Timer trigger fired for workflow ${workflow.workflowName}`);
                         await executeWorkflowSafe(workflow);
                     }
                     break;
@@ -156,7 +156,6 @@ async function pollOnce() {
                 case "price-trigger": {
                     const matched = await handlePriceTrigger(workflow, trigger);
                     if (!matched) break;
-                    console.log(`Price trigger matched for workflow ${workflow.workflowName}`);
                     await executeWorkflowSafe(workflow);
                     break;
                 }

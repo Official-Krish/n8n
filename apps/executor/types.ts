@@ -46,11 +46,6 @@ export type WorkflowType = {
     _id: mongoose.Types.ObjectId;
 };
 
-export interface ExecutionResponseType {
-    status: "Success" | "Failed";
-    message: string;
-}
-
 export type EventType = "buy" | "sell" | "price_trigger" | "trade_failed";
 
 export interface NotificationDetails {
