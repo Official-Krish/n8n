@@ -25,7 +25,12 @@ export async function executeWorkflowSafe(workflow: WorkflowType) {
     });
 
     try {
-        const res = await executeWorkflow(workflow.nodes, workflow.edges);
+        const res = await executeWorkflow(
+            workflow.nodes,
+            workflow.edges,
+            workflow.userId.toString(),
+            workflow._id.toString()
+        );
         execution.status = res.status;
         execution.set("steps", res.steps);
     } catch (err: any) {

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { apiGetAllWorkflows } from "@/http";
 import type { Workflow } from "@/types/api";
 import { Button } from "@/components/ui/button";
-import { WorkflowTable } from "./dashboard/workflowTable";
+import { WorkflowTable } from "./dashboard/WorkflowTable";
 
 export const Dashboard = () => {
   const navigate = useNavigate();
@@ -12,25 +12,25 @@ export const Dashboard = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const load = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const res = await apiGetAllWorkflows();
-        setWorkflows(res.workflows ?? []);
-      } catch (e: any) {
-        setError(
-          e?.response?.data?.message ??
-            e?.message ??
-            "Failed to load workflows",
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
+  const loadWorkflows = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await apiGetAllWorkflows();
+      setWorkflows(res.workflows ?? []);
+    } catch (e: any) {
+      setError(
+        e?.response?.data?.message ??
+          e?.message ??
+          "Failed to load workflows",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    void load();
+  useEffect(() => {
+    void loadWorkflows();
   }, []);
 
   const totalNodes = useMemo(
@@ -140,7 +140,11 @@ export const Dashboard = () => {
             </div>
           ) : (
             <div className="overflow-hidden rounded-2xl border border-neutral-800/80 bg-neutral-950/60">
-              <WorkflowTable workflows={workflows} loading={loading} />
+              <WorkflowTable 
+                workflows={workflows} 
+                loading={loading}
+                onWorkflowDeleted={loadWorkflows}
+              />
             </div>
           )}
         </section>

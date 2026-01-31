@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, CheckCircle2, AlertCircle, Hourglass, Clock } from "lucide-react";
-import { apiGetExecution, apiGetWorkflow } from "@/http";
+import { ArrowLeft, CheckCircle2, AlertCircle, Hourglass, Clock, Key } from "lucide-react";
+import { apiGetExecution, apiGetWorkflow, apiGetZerodhaTokenStatus, apiGetMarketStatus } from "@/http";
+import type { ExecutionStep } from "@n8n-trading/types";
+import { WorkflowStatusBadge } from "./dashboard/WorkflowStatusBadge";
 
 interface Execution {
   _id: string;
   workflowId: string;
   userId: string;
   status: string;
-  message?: string;
+  steps: ExecutionStep[];
   startTime: string;
   endTime?: string;
 }
@@ -20,6 +22,9 @@ export const Executions = () => {
   const [executions, setExecutions] = useState<Execution[]>([]);
   const [workflowName, setWorkflowName] = useState("Workflow");
   const [loading, setLoading] = useState(true);
+  const [hasZerodha, setHasZerodha] = useState(false);
+  const [tokenStatus, setTokenStatus] = useState<any>(null);
+  const [marketStatus, setMarketStatus] = useState<any>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,6 +37,26 @@ export const Executions = () => {
           ]);
           setExecutions(executionsData.executions || []);
           setWorkflowName(workflowData.workflowName || "Workflow");
+          
+          // Check if workflow has Zerodha actions
+          const hasZerodhaNode = workflowData.nodes?.some((node: any) => 
+            node.type?.toLowerCase() === "zerodha"
+          );
+          setHasZerodha(hasZerodhaNode);
+
+          // Fetch token and market status if Zerodha node exists
+          if (hasZerodhaNode) {
+            try {
+              const [tokenRes, marketRes] = await Promise.all([
+                apiGetZerodhaTokenStatus(workflowId),
+                apiGetMarketStatus(),
+              ]);
+              setTokenStatus(tokenRes.tokenStatus);
+              setMarketStatus(marketRes.marketStatus);
+            } catch (error) {
+              console.error("Failed to fetch status:", error);
+            }
+          }
         }
       } catch (error) {
         console.error("Failed to fetch executions:", error);
@@ -92,7 +117,7 @@ export const Executions = () => {
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <div>
+          <div className="flex-1">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500">
               Workflow Executions
             </p>
@@ -100,7 +125,29 @@ export const Executions = () => {
               {workflowName}
             </h1>
           </div>
+          {hasZerodha && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2 border-neutral-700 bg-neutral-800 hover:bg-neutral-700"
+              onClick={() => navigate(`/workflow/${workflowId}`)}
+            >
+              <Key className="h-4 w-4" />
+              Manage Token
+            </Button>
+          )}
         </section>
+
+        {/* Status Badge */}
+        {hasZerodha && (
+          <section>
+            <WorkflowStatusBadge
+              hasZerodha={hasZerodha}
+              tokenStatus={tokenStatus}
+              marketStatus={marketStatus}
+            />
+          </section>
+        )}
 
         {/* Stats Cards */}
         {!loading && (
@@ -168,50 +215,70 @@ export const Executions = () => {
               <p className="text-sm text-neutral-400">No executions yet</p>
             </div>
           ) : (
-            <>
-              {/* Column Headers */}
-              <div className="grid grid-cols-6 gap-4 items-center px-6 py-3 bg-neutral-700/20 border-b border-neutral-700/50">
-                <span className="text-xs font-semibold uppercase tracking-widest text-neutral-500">Status</span>
-                <span className="text-xs font-semibold uppercase tracking-widest text-neutral-500">Message</span>
-                <span className="text-xs font-semibold uppercase tracking-widest text-neutral-500">Started At</span>
-                <span className="text-xs font-semibold uppercase tracking-widest text-neutral-500">Ended At</span>
-                <span className="text-xs font-semibold uppercase tracking-widest text-neutral-500">Duration</span>
-                <span className="text-xs font-semibold uppercase tracking-widest text-neutral-500 text-right">Execution ID</span>
-              </div>
-
-              <div className="divide-y divide-neutral-700/50">
-                {executions.map((execution) => (
-                  <div
-                    key={execution._id}
-                    className="grid grid-cols-6 gap-4 items-center px-6 py-4 hover:bg-neutral-700/30 transition-colors group"
-                  >
-                    <div className="flex items-center gap-3">
-                      {getStatusIcon(execution.status)}
-                      <span className="text-sm font-medium text-neutral-200">
-                        {execution.status}
+            <div className="divide-y divide-neutral-700/50">
+              {executions.map((execution) => (
+                <div key={execution._id} className="px-6 py-4 hover:bg-neutral-700/20 transition-colors">
+                  {/* Execution Header */}
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-3">
+                        {getStatusIcon(execution.status)}
+                        <span className="text-sm font-semibold text-neutral-200">
+                          {execution.status}
+                        </span>
+                      </div>
+                      <div className="h-4 w-px bg-neutral-700" />
+                      <span className="text-xs text-neutral-500">
+                        {formatDate(execution.startTime)}
+                      </span>
+                      <span className="text-xs text-neutral-500">
+                        Duration: {calculateDuration(execution.startTime, execution.endTime)}
                       </span>
                     </div>
-                    <span className="text-sm text-neutral-400 truncate" title={execution.message || ""}>
-                      {execution.message || "-"}
+                    <span className="font-mono text-xs text-neutral-500 truncate max-w-50">
+                      ID: {execution._id}
                     </span>
-                    <span className="text-sm text-neutral-400">
-                      {formatDate(execution.startTime)}
-                    </span>
-                    <span className="text-sm text-neutral-400">
-                      {execution.endTime ? formatDate(execution.endTime) : "-"}
-                    </span>
-                    <span className="text-sm text-neutral-400">
-                      {calculateDuration(execution.startTime, execution.endTime)}
-                    </span>
-                    <div className="flex justify-end">
-                      <span className="font-mono text-xs text-neutral-500 group-hover:text-neutral-400 transition-colors truncate">
-                        {execution._id}
-                      </span>
-                    </div>
                   </div>
-                ))}
-              </div>
-            </>
+
+                  {/* Execution Steps */}
+                  {execution.steps && execution.steps.length > 0 ? (
+                    <div className="space-y-2">
+                      {execution.steps.map((step, idx) => (
+                        <div
+                          key={idx}
+                          className="flex items-center gap-3 rounded-md border border-neutral-700/50 bg-neutral-800/30 px-4 py-3"
+                        >
+                          <div className="flex h-6 w-6 items-center justify-center rounded-full bg-neutral-700/50 text-xs font-semibold text-neutral-400">
+                            {step.step}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {getStatusIcon(step.status)}
+                            <span className="text-xs font-medium text-neutral-300">
+                              {step.status}
+                            </span>
+                          </div>
+                          <div className="h-4 w-px bg-neutral-700" />
+                          <span className="text-xs text-neutral-500 uppercase tracking-wider">
+                            {step.nodeType}
+                          </span>
+                          <div className="h-4 w-px bg-neutral-700" />
+                          <span className="text-sm text-neutral-300 flex-1">
+                            {step.message}
+                          </span>
+                          <span className="font-mono text-xs text-neutral-600">
+                            {step.nodeId.slice(0, 8)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="rounded-md border border-neutral-700/50 bg-neutral-800/30 px-4 py-3">
+                      <span className="text-xs text-neutral-500">No execution steps available</span>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           )}
         </section>
       </div>

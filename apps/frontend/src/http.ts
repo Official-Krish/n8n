@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { IdResponse, SigninResponse, Workflow } from "./types/api";
+import type { IdResponse, marketStatus, SigninResponse, Workflow } from "./types/api";
 
 const API_BASE =
   (import.meta as any).env?.VITE_BACKEND_URL?.toString?.() ??
@@ -123,3 +123,53 @@ export async function apiGetExecution(workflowId: string) {
   });
   return res.data;
 } 
+
+export async function apiDeleteWorkflow(workflowId: string): Promise<{ message: string }> {
+  const res = await api.delete<{ message: string }>(`/workflow/${workflowId}`, {
+    headers: {
+      Authorization: localStorage.getItem("token") || "",
+    },
+  });
+  return res.data;
+}
+
+export async function apiCreateZerodhaToken(body: {workflowId: string; accessToken: string }): Promise<{ success: boolean; message: string; tokenStatus: any }> {
+  const res = await api.post<{ success: boolean; message: string; tokenStatus: any }>("/zerodha-token/create", body, {
+    headers: {
+      Authorization: localStorage.getItem("token") || "",
+    },
+  });
+  return res.data;
+}
+
+export async function apiGetZerodhaTokenStatus(workflowId: string): Promise<{ success: boolean; tokenStatus: any }> {
+  const res = await api.get<{ success: boolean; tokenStatus: any }>(`/zerodha-token/status/${workflowId}`, {
+    headers: {
+      Authorization: localStorage.getItem("token") || "",
+    },
+  });
+  return res.data;
+}
+
+export async function apiDeleteZerodhaToken(workflowId: string): Promise<{ success: boolean; message: string }> {
+  const res = await api.delete<{ success: boolean; message: string }>(`/zerodha-token/${workflowId}`, {
+    headers: {
+      Authorization: localStorage.getItem("token") || "",
+    },
+  });
+  return res.data;
+}
+
+export async function apiUpdateZerodhaToken(body: {workflowId: string; accessToken: string }): Promise<{ success: boolean; message: string; tokenStatus: any }> {
+  const res = await api.put<{ success: boolean; message: string; tokenStatus: any }>("/zerodha-token/update", body, {
+    headers: {
+      Authorization: localStorage.getItem("token") || "",
+    },
+  });
+  return res.data;
+}
+
+export async function apiGetMarketStatus(): Promise<{ success: boolean, marketStatus: marketStatus }> {
+  const res = await api.get<{ success: boolean, marketStatus: marketStatus }>("/market-status");
+  return res.data;
+}
