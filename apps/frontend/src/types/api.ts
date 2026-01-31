@@ -18,3 +18,9 @@ export interface Workflow {
   nodes: any[];
   edges: any[];
 }
+
+export type marketStatus = {
+  isOpen: boolean;
+  message: string;
+  nextOpenTime?: string;
+}

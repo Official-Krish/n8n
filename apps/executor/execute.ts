@@ -4,9 +4,13 @@ import { sendEmail } from "./executors/gmail";
 import { executeGrowwNode } from "./executors/groww";
 import { executeZerodhaNode } from "./executors/zerodha";
 import type { EdgeType, NodeType } from "./types";
+import { isMarketOpen } from "./utils/market.utils";
+import { checkTokenStatus, getMarketStatus, getZerodhaToken } from "@n8n-trading/executor-utils";
 
 interface ExecutionContext {
     eventType?: "buy" | "sell" | "price_trigger" | "trade_failed";
+    userId?: string;
+    workflowId?: string;
     details?: {
         symbol?: string;
         quantity?: number;
@@ -18,10 +22,10 @@ interface ExecutionContext {
     };
 }
 
-export async function executeWorkflow(nodes: NodeType[], edges: EdgeType[]): Promise<ExecutionResponseType> {
+export async function executeWorkflow(nodes: NodeType[], edges: EdgeType[], userId?: string, workflowId?: string): Promise<ExecutionResponseType> {
     const trigger = nodes.find((node) => node?.data?.kind === "trigger" || node?.data?.kind === "TRIGGER");
 
-    const context: ExecutionContext = {};
+    const context: ExecutionContext = { userId, workflowId };
 
     if (!trigger) {
         return {
@@ -67,12 +71,50 @@ export async function executeRecursive(
         switch (node.type) {
             case "zerodha": 
                 try {
+                    // Check if market is open
+                    if (!isMarketOpen()) {
+                        const marketStatus = getMarketStatus();
+                        steps.push({
+                            step: steps.length + 1,
+                            nodeId: node.nodeId,
+                            nodeType: "Zerodha Action",
+                            status: "Failed",
+                            message: `Cannot execute trade: ${marketStatus.message}. ${marketStatus.nextOpenTime ? `Next opening: ${marketStatus.nextOpenTime}` : ""}`
+                        });
+                        return;
+                    }
+
+                    // Check if user has valid access token for this workflow
+                    const tokenStatus = await checkTokenStatus(context.userId || "", context.workflowId || "");
+                    if (!tokenStatus.hasValidToken) {
+                        steps.push({
+                            step: steps.length + 1,
+                            nodeId: node.nodeId,
+                            nodeType: "Zerodha Action",
+                            status: "Failed",
+                            message: `Workflow paused: ${tokenStatus.message}${tokenStatus.tokenRequestId ? ` (Request ID: ${tokenStatus.tokenRequestId})` : ""}`
+                        });
+                        return;
+                    }
+
+                    const accessToken = await getZerodhaToken(context.userId || "", context.workflowId || "");
+                    if (!accessToken) {
+                        steps.push({
+                            step: steps.length + 1,
+                            nodeId: node.nodeId,
+                            nodeType: "Zerodha Action",
+                            status: "Failed",
+                            message: "Workflow paused: Access token not available. Please provide your Zerodha access token."
+                        });
+                        return;
+                    }
+
                     const Zres = await executeZerodhaNode(
                        node.data?.metadata?.symbol, 
                        node.data?.metadata?.qty, 
                        node.data?.metadata?.type, 
                        node.data?.metadata?.apiKey,
-                       node.data?.metadata?.accessToken,
+                       accessToken,
                        node.data?.metadata?.exchange || "NSE"
                     );
                     
