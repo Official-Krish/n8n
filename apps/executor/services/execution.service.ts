@@ -15,7 +15,7 @@ export async function canExecute(workflowId: string): Promise<boolean> {
     );
 }
 
-export async function executeWorkflowSafe(workflow: WorkflowType) {
+export async function executeWorkflowSafe(workflow: WorkflowType, condition?: boolean) {
     const execution = await ExecutionModel.create({
         workflowId: workflow._id,
         userId: workflow.userId,
@@ -29,7 +29,8 @@ export async function executeWorkflowSafe(workflow: WorkflowType) {
             workflow.nodes,
             workflow.edges,
             workflow.userId.toString(),
-            workflow._id.toString()
+            workflow._id.toString(),
+            condition
         );
         execution.status = res.status;
         execution.set("steps", res.steps);

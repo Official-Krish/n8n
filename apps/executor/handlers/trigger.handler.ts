@@ -65,3 +65,18 @@ export async function handleTimerTrigger(
     if (!lastExecutionTime) return true;
     return lastExecutionTime + interval * 1000 < Date.now();
 }
+
+export async function handleConditionalTrigger(timeWindowMinutes: number, startTime: Date): Promise<boolean> {
+    const now = Date.now();
+    const start = startTime.getTime();
+    return now >= start && now <= start + timeWindowMinutes * 60 * 1000;   
+}
+
+export async function checkCondition(targetPrice: number, marketType: "Indian" | "Crypto", asset: string, condition: "above" | "below"): Promise<boolean> {
+    const currentPrice = await getCurrentPrice(asset, marketType);
+    if (condition === "above") {
+        return currentPrice > targetPrice;
+    } else {
+        return currentPrice < targetPrice;
+    }   
+}

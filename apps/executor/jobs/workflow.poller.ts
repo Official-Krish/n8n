@@ -1,6 +1,6 @@
 import { ExecutionModel, WorkflowModel } from "@n8n-trading/db/client";
 import { canExecute, executeWorkflowSafe } from "../services/execution.service";
-import { handlePriceTrigger, handleTimerTrigger } from "../handlers/trigger.handler";
+import { checkCondition, handleConditionalTrigger, handlePriceTrigger, handleTimerTrigger } from "../handlers/trigger.handler";
 
 export async function pollOnce() {
     const workflows = await WorkflowModel.find({});
@@ -38,6 +38,18 @@ export async function pollOnce() {
                 case "price-trigger": {
                     const shouldExecute = await handlePriceTrigger(workflow, trigger);
                     if (shouldExecute) {
+                        await executeWorkflowSafe(workflow);
+                    }
+                    break;
+                }
+
+                case "conditional-trigger": {
+                    const shouldExecute = await handleConditionalTrigger(
+                        trigger.data?.metadata?.timeWindowMinutes,
+                        trigger.data?.metadata?.startTime,
+                    );
+                    if (shouldExecute) {
+                        const condition = await checkCondition(trigger.data?.metadata?.targetPrice, trigger.data?.metadata?.marketType, trigger.data?.metadata?.asset, trigger.data?.metadata?.condition);
                         await executeWorkflowSafe(workflow);
                     }
                     break;

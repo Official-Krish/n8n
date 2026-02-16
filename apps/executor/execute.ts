@@ -23,7 +23,7 @@ interface ExecutionContext {
     };
 }
 
-export async function executeWorkflow(nodes: NodeType[], edges: EdgeType[], userId?: string, workflowId?: string): Promise<ExecutionResponseType> {
+export async function executeWorkflow(nodes: NodeType[], edges: EdgeType[], userId?: string, workflowId?: string, condition?: boolean): Promise<ExecutionResponseType> {
     const trigger = nodes.find((node) => node?.data?.kind === "trigger" || node?.data?.kind === "TRIGGER");
 
     const context: ExecutionContext = { userId, workflowId };
@@ -50,14 +50,15 @@ export async function executeWorkflow(nodes: NodeType[], edges: EdgeType[], user
         };
     }
     
-    return await executeRecursive(trigger?.id, nodes, edges, context);
+    return await executeRecursive(trigger?.id, nodes, edges, context, condition);
 }
 
 export async function executeRecursive(
     sourceId: string, 
     nodes: NodeType[], 
     edges: EdgeType[],
-    context: ExecutionContext = {}
+    context: ExecutionContext = {},
+    condition?: boolean
 ): Promise<ExecutionResponseType> {
     const nodesToExecute = edges.filter(({source, target}) => source === sourceId).map(({target}) => target);
     if (!nodesToExecute) return {
@@ -72,7 +73,10 @@ export async function executeRecursive(
         switch (node.type) {
             case "zerodha": 
                 try {
-                    // Check if market is open
+                    if (condition === false || condition === true) {
+                        node.data?.metadata.condition != condition;
+                        return;
+                    }
                     if (!isMarketOpen()) {
                         const marketStatus = getMarketStatus();
                         steps.push({
@@ -174,6 +178,10 @@ export async function executeRecursive(
                 
             case "groww":
                 try {
+                    if (condition === false || condition === true) {
+                        node.data?.metadata.condition != condition;
+                        return;
+                    }
                     const Gres = await executeGrowwNode(
                         node.data?.metadata?.symbol, 
                         node.data?.metadata?.qty, 
@@ -237,6 +245,10 @@ export async function executeRecursive(
 
             case "gmail": 
                 try {
+                    if (condition === false || condition === true) {
+                        node.data?.metadata.condition != condition;
+                        return;
+                    }
                     if (context.eventType && context.details) {
                         await sendEmail(
                             node.data?.metadata?.recipientEmail || "",
@@ -286,6 +298,10 @@ export async function executeRecursive(
 
             case "discord": 
                 try {
+                    if (condition === false || condition === true) {
+                        node.data?.metadata.condition != condition;
+                        return;
+                    }
                     if (context.eventType && context.details) {
                         await sendDiscordNotification(
                             node.data?.metadata?.webhookUrl || "",
@@ -335,6 +351,10 @@ export async function executeRecursive(
             
             case "lighter": 
                 try {
+                    if (condition === false || condition === true) {
+                        node.data?.metadata.condition != condition;
+                        return;
+                    }
                     await ExecuteLighter(
                         node.data?.metadata?.symbol, 
                         node.data?.metadata?.amount, 
@@ -365,7 +385,7 @@ export async function executeRecursive(
         }
     }));
 
-    await Promise.all(nodesToExecute.map(id => executeRecursive(id, nodes, edges, context)));
+    await Promise.all(nodesToExecute.map(id => executeRecursive(id, nodes, edges, context, condition)));
 
     if (steps.some(step => step.status === "Failed")) {
         return { status: "Failed", steps: steps };
