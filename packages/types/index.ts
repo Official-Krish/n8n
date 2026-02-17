@@ -17,6 +17,7 @@ export interface EdgeType {
     source: string;
     target: string;
     sourceHandle?: string;
+    targetHandle?: string;
 }
 
 export type NodeMetadata = TradingMetadata | TimerNodeMetadata | PriceTriggerNodeMetadata | NotificationMetadata | LighterMetadata | ConditionalTriggerMetadata | {};
