@@ -29,7 +29,14 @@ export const SUPPORTED_ACTIONS = {
             title: "Discord",
             description: "Send Discord webhook notifications for workflow events",
         },
-    ]
+    ],
+    "Flow": [
+        {
+            id: "conditional-trigger",
+            title: "Conditional Trigger",
+            description: "Branch this workflow using AND/OR condition groups",
+        },
+    ],
 };
 
 export const SUPPORTED_TRIGGERS = [

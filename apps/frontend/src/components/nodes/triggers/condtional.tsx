@@ -45,7 +45,7 @@ export const conditionTrigger = ({
           Condition
         </span>
         <span className="rounded-full bg-neutral-900 px-2 py-0.5 text-[10px] font-mono text-neutral-300">
-          IF
+          {expression ? `${expression.conditions.length} Group${expression.conditions.length > 1 ? "s" : ""}` : "No Expression"}
         </span>
       </div>
       {details.length > 0 && (

@@ -25,13 +25,19 @@ export const ActionSheets = ({
     <div className="space-y-3 rounded-2xl border border-neutral-800 bg-neutral-950/70 p-4">
       <div className="space-y-1">
         <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-[#f17463]">
-          {initialAction === "Order Execution" ? "Order Execution" : "Order Notification"}
+          {initialAction === "Order Execution"
+            ? "Order Execution"
+            : initialAction === "Flow Control"
+              ? "Flow Control"
+              : "Order Notification"}
         </p>
 
         <p className="text-[10px] text-neutral-500">
           {initialAction === "Order Execution"
             ? "Execute trades on your selected brokerage"
-            : "Send email or chat notifications on order events"}
+            : initialAction === "Flow Control"
+              ? "Add logical branching to your workflow graph"
+              : "Send email or chat notifications on order events"}
         </p>
       </div>
       <Select onValueChange={onValueChange} value={value || undefined}>

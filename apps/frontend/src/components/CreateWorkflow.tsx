@@ -353,12 +353,18 @@ export const CreateWorkflow = () => {
             if (branch === 'true') condition = true;
             if (branch === 'false') condition = false;
             const nodeId = Math.random().toString();
+            const isFlowConditional = type === "conditional-trigger";
             setNodes([
               ...nodes,
               {
                 nodeId,
                 type,
-                data: { kind: "action", metadata: { ...metadata, branch, ...(condition !== undefined ? { condition } : {}) } },
+                data: {
+                  kind: "action",
+                  metadata: isFlowConditional
+                    ? { ...metadata }
+                    : { ...metadata, branch, ...(condition !== undefined ? { condition } : {}) },
+                },
                 position: selectedAction.position,
               },
             ]);
