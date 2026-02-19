@@ -6,9 +6,11 @@ import { indicatorEngine } from "../services/indicator.engine";
 export async function pollOnce() {
     const workflows = await WorkflowModel.find({});
     for (const workflow of workflows) {
-        const trigger = workflow.nodes.find((n: any) => n?.type === "conditional-trigger");
-        if (trigger?.data?.metadata?.expression) {
-            indicatorEngine.registerExpression(trigger.data.metadata.expression);
+        const conditionalNodes = workflow.nodes.filter((n: any) => n?.type === "conditional-trigger");
+        for (const node of conditionalNodes) {
+            if (node?.data?.metadata?.expression) {
+                indicatorEngine.registerExpression(node.data.metadata.expression);
+            }
         }
     }
     await indicatorEngine.refreshSubscribedSymbols();

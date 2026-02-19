@@ -7,6 +7,7 @@ import { ActionSheet } from "./ActionSheet";
 export interface SelectedActionState {
   position: { x: number; y: number };
   startingNodeId: string;
+  sourceHandle?: string;
 }
 
 export interface WorkflowCanvasProps {
@@ -188,6 +189,7 @@ export const WorkflowCanvas = ({
             }}
             onSelect={onActionSelect}
             marketType={marketType}
+            setMarketType={setMarketType}
           />
         )}
 
@@ -204,6 +206,7 @@ export const WorkflowCanvas = ({
             title="Edit action"
             onSelect={onEditActionSave}
             marketType={marketType}
+            setMarketType={setMarketType}
           />
         )}
 

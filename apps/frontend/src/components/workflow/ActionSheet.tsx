@@ -4,6 +4,7 @@ import {
   type NodeMetadata,
   type TradingMetadata,
 } from "@n8n-trading/types";
+import type { Dispatch, SetStateAction } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -20,16 +21,18 @@ import { TradingForm } from "./sheets/TradingForm";
 import { GmailForm } from "./sheets/GmailForm";
 import { DiscordForm } from "./sheets/DiscordForm";
 import { ActionSheets } from "./sheets/ActionSheets";
+import { ConditionalTriggerForm } from "./sheets/CondtionalTriggerForm";
 
 export const ActionSheet = ({
   onSelect,
   open,
   onOpenChange,
-  initialKind,
-  initialMetadata,
+  initialKind: _initialKind,
+  initialMetadata: _initialMetadata,
   submitLabel,
   title,
   marketType,
+  setMarketType,
 }: {
   onSelect: (kind: NodeKind, metadata: NodeMetadata) => void;
   open: boolean;
@@ -39,10 +42,11 @@ export const ActionSheet = ({
   submitLabel?: string;
   title?: string;
   marketType: "Indian" | "Crypto" | null;
+  setMarketType: Dispatch<SetStateAction<"Indian" | "Crypto" | null>>;
 }) => {
   const [metadata, setMetadata] = useState<TradingMetadata | LighterMetadata | {}>({});
   const [selectedAction, setSelectedAction] = useState("");
-  const [initialAction, setInitialAction] = useState<"Order Notification" | "Order Execution" | undefined>(undefined);
+  const [initialAction, setInitialAction] = useState<"Order Notification" | "Order Execution" | "Flow Control" | undefined>(undefined);
 
   const handleCreate = () => {
     if (!selectedAction) return;
@@ -79,6 +83,11 @@ export const ActionSheet = ({
                 title: "Order Notification",
                 description: "Send notifications for your order events",
               },
+              {
+                id: "Flow Control",
+                title: "Flow Control",
+                description: "Branch workflow paths using conditions",
+              },
             ]}
           />
           
@@ -88,6 +97,15 @@ export const ActionSheet = ({
               value={selectedAction}
               onValueChange={setSelectedAction}
               actions={SUPPORTED_ACTIONS["Notification"]}
+              initialAction={initialAction}
+            />
+          )}
+
+          {initialAction === "Flow Control" && (
+            <ActionSheets
+              value={selectedAction}
+              onValueChange={setSelectedAction}
+              actions={SUPPORTED_ACTIONS["Flow"]}
               initialAction={initialAction}
             />
           )}
@@ -116,6 +134,15 @@ export const ActionSheet = ({
 
           {selectedAction === "discord" && (
             <DiscordForm metadata={metadata} setMetadata={setMetadata} />
+          )}
+
+          {selectedAction === "conditional-trigger" && (
+            <ConditionalTriggerForm
+              marketType={marketType}
+              setMarketType={setMarketType}
+              metadata={metadata as any}
+              setMetadata={setMetadata}
+            />
           )}
         </SheetHeader>
         <SheetFooter className="border-t border-neutral-900 bg-black/90 p-4">

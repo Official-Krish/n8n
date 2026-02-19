@@ -7,6 +7,7 @@ import type { EdgeType, NodeType } from "./types";
 import { isMarketOpen } from "./utils/market.utils";
 import { checkTokenStatus, getMarketStatus, getZerodhaToken } from "@n8n-trading/executor-utils";
 import { ExecuteLighter } from "./executors/lighter";
+import { evaluateConditionalMetadata } from "./handlers/trigger.handler";
 
 interface ExecutionContext {
     eventType?: "buy" | "sell" | "price_trigger" | "trade_failed" | "Long" | "Short";
@@ -73,10 +74,48 @@ export async function executeRecursive(
     context: ExecutionContext = {},
     condition?: boolean
 ): Promise<ExecutionResponseType> {
-    const nodesToExecute = edges.filter(({source, target}) => source === sourceId).map(({target}) => target);
-    if (!nodesToExecute) return {
-        status: "Success",
-        steps: []
+    const sourceNode = nodes.find((node) => node.id === sourceId);
+    const outgoingEdges = edges.filter(({ source }) => source === sourceId);
+    if (!outgoingEdges.length) {
+        return {
+            status: "Success",
+            steps: []
+        };
+    }
+
+    let nextCondition = condition;
+    let targetEdges = outgoingEdges;
+
+    if (sourceNode?.type === "conditional-trigger") {
+        const isRootTriggerNode = String(sourceNode.data?.kind || "").toLowerCase() === "trigger";
+        const evaluatedCondition =
+            typeof condition === "boolean" && isRootTriggerNode
+                ? condition
+                : await evaluateConditionalMetadata(sourceNode.data?.metadata);
+
+        nextCondition = evaluatedCondition;
+
+        targetEdges = outgoingEdges.filter((edge) => {
+            if (edge.sourceHandle === "true" || edge.sourceHandle === "false") {
+                return edge.sourceHandle === String(evaluatedCondition);
+            }
+
+            const targetNode = nodes.find((node) => node.id === edge.target);
+            const targetCondition = targetNode?.data?.metadata?.condition;
+            if (typeof targetCondition === "boolean") {
+                return targetCondition === evaluatedCondition;
+            }
+
+            return true;
+        });
+    }
+
+    const nodesToExecute = targetEdges.map(({ target }) => target);
+    if (!nodesToExecute.length) {
+        return {
+            status: "Success",
+            steps: []
+        };
     }
     const steps: ExecutionStep[] = [];
 
@@ -84,9 +123,11 @@ export async function executeRecursive(
         const node = nodes.find((n) => n.id === id);
         if (!node) return { status: "Failed", message: `Node with id ${id} not found` };
         switch (node.type) {
+            case "conditional-trigger":
+                return;
             case "zerodha": 
                 try {
-                    if (shouldSkipActionByCondition(condition, node.data?.metadata?.condition)) {
+                    if (shouldSkipActionByCondition(nextCondition, node.data?.metadata?.condition)) {
                         return;
                     }
                     if (!isMarketOpen()) {
@@ -190,7 +231,7 @@ export async function executeRecursive(
                 
             case "groww":
                 try {
-                    if (shouldSkipActionByCondition(condition, node.data?.metadata?.condition)) {
+                    if (shouldSkipActionByCondition(nextCondition, node.data?.metadata?.condition)) {
                         return;
                     }
                     const Gres = await executeGrowwNode(
@@ -256,7 +297,7 @@ export async function executeRecursive(
 
             case "gmail": 
                 try {
-                    if (shouldSkipActionByCondition(condition, node.data?.metadata?.condition)) {
+                    if (shouldSkipActionByCondition(nextCondition, node.data?.metadata?.condition)) {
                         return;
                     }
                     if (context.eventType && context.details) {
@@ -308,7 +349,7 @@ export async function executeRecursive(
 
             case "discord": 
                 try {
-                    if (shouldSkipActionByCondition(condition, node.data?.metadata?.condition)) {
+                    if (shouldSkipActionByCondition(nextCondition, node.data?.metadata?.condition)) {
                         return;
                     }
                     if (context.eventType && context.details) {
@@ -360,7 +401,7 @@ export async function executeRecursive(
             
             case "lighter": 
                 try {
-                    if (shouldSkipActionByCondition(condition, node.data?.metadata?.condition)) {
+                    if (shouldSkipActionByCondition(nextCondition, node.data?.metadata?.condition)) {
                         return;
                     }
                     await ExecuteLighter(
@@ -393,10 +434,15 @@ export async function executeRecursive(
         }
     }));
 
-    await Promise.all(nodesToExecute.map(id => executeRecursive(id, nodes, edges, context, condition)));
+    const childResults = await Promise.all(
+        nodesToExecute.map((id) => executeRecursive(id, nodes, edges, context, nextCondition))
+    );
 
-    if (steps.some(step => step.status === "Failed")) {
-        return { status: "Failed", steps: steps };
+    const childSteps = childResults.flatMap((result) => result.steps);
+    const allSteps = [...steps, ...childSteps];
+
+    if (allSteps.some((step) => step.status === "Failed")) {
+        return { status: "Failed", steps: allSteps };
     }
-    return { status: "Success", steps: steps };
+    return { status: "Success", steps: allSteps };
 }
