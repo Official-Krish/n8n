@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import userRouter from './routes/user';
 import workFlowRouter from './routes/workflow';
 import mongoose from 'mongoose';
@@ -7,8 +8,25 @@ import ZerodhaTokenRouter from './routes/token';
 import { getMarketStatus } from '@quantnest-trading/executor-utils';
 
 const app = express();
+app.set("trust proxy", 1);
 app.use(express.json());
-app.use(cors());
+app.use(cookieParser());
+
+const allowedOrigins = (process.env.CORS_ORIGIN || process.env.FRONTEND_URL || "http://localhost:5173")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+      return;
+    }
+    callback(new Error("Not allowed by CORS"));
+  },
+  credentials: true,
+}));
 
 mongoose.connect(process.env.MONGO_URL || 'mongodb://localhost:27017/myapp')
 

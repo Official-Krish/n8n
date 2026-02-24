@@ -26,6 +26,12 @@ Create `apps/backend/.env`:
 MONGO_URL=mongodb://localhost:27017/myapp
 JWT_SECRET=replace_with_secure_secret
 NODE_ENV=development
+CORS_ORIGIN=http://localhost:5173
+# Optional cookie controls for K8s/ingress deployments
+# AUTH_COOKIE_NAME=quantnest_auth
+# COOKIE_DOMAIN=.yourdomain.com
+# COOKIE_SECURE=true
+# COOKIE_SAMESITE=none
 ```
 
 ## Run Locally

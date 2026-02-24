@@ -4,9 +4,25 @@ import { UserModel, WorkflowModel } from '@quantnest-trading/db/client';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { authMiddleware } from '../middleware';
+import type { CookieOptions } from 'express';
 
 const userRouter = Router();
 const JWT_SECRET = process.env.JWT_SECRET || "JWT_SECRET"; ;
+
+const cookieName = process.env.AUTH_COOKIE_NAME || "quantnest_auth";
+const isProduction = process.env.NODE_ENV === "production";
+
+function getAuthCookieOptions(): CookieOptions {
+    return {
+        httpOnly: true,
+        secure: isProduction || process.env.COOKIE_SECURE === "true",
+        sameSite: (process.env.COOKIE_SAMESITE as "lax" | "strict" | "none" | undefined)
+            || (isProduction ? "none" : "lax"),
+        path: "/",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        ...(process.env.COOKIE_DOMAIN ? { domain: process.env.COOKIE_DOMAIN } : {}),
+    };
+}
 
 userRouter.post('/signup', async (req, res) => {
     const parsedData = SignupSchema.safeParse(req.body);
@@ -31,7 +47,8 @@ userRouter.post('/signup', async (req, res) => {
             createdAt: new Date(),
         })
         const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1w' });
-        res.status(200).json({ message: "User created", userId: user._id, token });
+        res.cookie(cookieName, token, getAuthCookieOptions());
+        res.status(200).json({ message: "User created", userId: user._id, avatarUrl: user.avatarUrl });
     } catch (error) {
         console.error("Error during signup:", error);
         res.status(500).json({ message: "Internal server error" });
@@ -55,7 +72,8 @@ userRouter.post('/signin', async (req, res) => {
             return;
         }
         const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1w' });
-        res.status(200).json({ message: "Signin successful", userId: user._id, token, avatarUrl: user.avatarUrl});
+        res.cookie(cookieName, token, getAuthCookieOptions());
+        res.status(200).json({ message: "Signin successful", userId: user._id, avatarUrl: user.avatarUrl});
     }).catch((error) => {
         res.status(500).json({ message: "Internal server error", error });
     });
@@ -101,6 +119,18 @@ userRouter.post("/update-avatar", authMiddleware, async (req, res) => {
 
 userRouter.get('/verify', authMiddleware, (req, res) => {
     res.status(200).json({ message: "Token is valid" });
+});
+
+userRouter.post('/signout', (_req, res) => {
+    res.clearCookie(cookieName, {
+        httpOnly: true,
+        secure: isProduction || process.env.COOKIE_SECURE === "true",
+        sameSite: (process.env.COOKIE_SAMESITE as "lax" | "strict" | "none" | undefined)
+            || (isProduction ? "none" : "lax"),
+        path: "/",
+        ...(process.env.COOKIE_DOMAIN ? { domain: process.env.COOKIE_DOMAIN } : {}),
+    });
+    res.status(200).json({ message: "Signout successful" });
 });
 
 export default userRouter;
