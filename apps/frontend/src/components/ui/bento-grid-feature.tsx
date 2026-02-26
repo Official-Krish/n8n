@@ -17,6 +17,8 @@ interface BentoCardProps extends ComponentPropsWithoutRef<"div"> {
   description: string
   href: string
   cta: string
+  status?: string
+  statusTone?: "live" | "beta" | "coming-soon"
 }
 
 const BentoGrid = ({ children, className, ...props }: BentoGridProps) => {
@@ -41,6 +43,8 @@ const BentoCard = ({
   description,
   href,
   cta,
+  status,
+  statusTone = "live",
   ...props
 }: BentoCardProps) => (
   <div
@@ -55,6 +59,23 @@ const BentoCard = ({
   >
     <div>{background}</div>
     <div className="p-4">
+      {status && (
+        <div className="mb-3 flex items-center justify-end">
+          <span
+            className={cn(
+              "rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em]",
+              statusTone === "live" &&
+                "border-emerald-500/40 bg-emerald-500/15 text-emerald-200",
+              statusTone === "beta" &&
+                "border-amber-500/40 bg-amber-500/15 text-amber-200",
+              statusTone === "coming-soon" &&
+                "border-neutral-600 bg-neutral-700/20 text-neutral-300"
+            )}
+          >
+            {status}
+          </span>
+        </div>
+      )}
       <div className="pointer-events-none z-10 flex transform-gpu flex-col gap-1 transition-all duration-300 lg:group-hover:-translate-y-10">
         <Icon className="h-12 w-12 origin-left transform-gpu text-neutral-700 transition-all duration-300 ease-in-out group-hover:scale-75" />
         <h3 className="text-xl font-semibold text-neutral-300">

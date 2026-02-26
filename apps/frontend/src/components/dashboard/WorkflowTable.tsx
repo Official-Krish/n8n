@@ -57,7 +57,7 @@ export const WorkflowTable = ({ workflows, loading, onWorkflowDeleted }: Workflo
                 <p className="text-sm text-muted-foreground">No workflows yet.</p>
                 <Button
                     className="gap-2"
-                    onClick={() => navigate("/create")}
+                    onClick={() => navigate("/create/onboarding")}
                 >
                     Start your first workflow
                     <ChevronRight className="h-4 w-4" />

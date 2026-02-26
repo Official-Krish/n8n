@@ -11,6 +11,7 @@ import {
 import { BentoCard, BentoGrid } from "@/components/ui/bento-grid-feature"
 import { AnimatedList } from "../ui/animated-list"
 import NotificationCard from "./NotificationCard"
+import { WorkflowNodePreview } from "./WorkflowNodePreview"
 
 export const Features = () => {
   const notificationRef = useRef<HTMLDivElement | null>(null)
@@ -50,8 +51,7 @@ export const Features = () => {
               Built for Intelligent Trading Automation
             </h1>
             <h3 className="text-sm font-medium tracking-tight md:text-sm lg:text-base text-gray-300 mx-auto mt-6 max-w-lg px-2">
-              Design, test, and deploy AI-powered trading strategies using a
-              visual, workflow-based interface.
+              Design test and deploy AI powered trading strategies using an intuitive visual workflow engine built for modern traders
             </h3>
           </div>
         </div>
@@ -109,7 +109,16 @@ const features = (
       "Trade across equities, F&O, and upcoming Web3 protocols from a single workflow.",
     href: "/",
     cta: "Learn more",
-    background: <img className="absolute -top-20 -right-20 opacity-60" />,
+    status: "Live",
+    statusTone: "live" as const,
+    background: (
+      <WorkflowNodePreview
+        kind="action"
+        title="Execute on Zerodha / Groww"
+        subtitle="Route the same strategy to multiple broker actions."
+        badges={["IND", "F&O"]}
+      />
+    ),
     className: "lg:col-start-3 lg:col-end-3 lg:row-start-2 lg:row-end-4",
   },
   {
@@ -119,6 +128,8 @@ const features = (
       "Stay updated with real-time alerts on trade executions, price movements, and strategy performance.",
     href: "/",
     cta: "Learn more",
+    status: "Live",
+    statusTone: "live" as const,
     background: (
       <div ref={notificationRef} className="h-full w-full">
         <AnimatedList
@@ -149,7 +160,16 @@ const features = (
       "Design trading strategies using drag-and-drop nodes for indicators, conditions, AI agents, and execution logic.",
     href: "/",
     cta: "Learn more",
-    background: <img className="absolute -top-20 -right-20 opacity-60" />,
+    status: "Live",
+    statusTone: "live" as const,
+    background: (
+      <WorkflowNodePreview
+        kind="condition"
+        title="RSI(14) < 30 AND EMA20 > EMA50"
+        subtitle="Branch true/false paths like the real builder canvas."
+        badges={["5m", "15m"]}
+      />
+    ),
     className: "lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-3",
   },
   {
@@ -159,6 +179,8 @@ const features = (
       "Use AI agents for market analysis, signal generation, risk checks, and trade validation.",
     href: "/",
     cta: "Learn more",
+    status: "Beta",
+    statusTone: "beta" as const,
     background: <img className="absolute -top-20 -right-20 opacity-60" />,
     className: "lg:col-start-1 lg:col-end-2 lg:row-start-3 lg:row-end-4",
   },
@@ -169,6 +191,8 @@ const features = (
       "Test strategies against historical data with performance metrics and visualizations.",
     href: "/",
     cta: "Learn more",
+    status: "Coming Soon",
+    statusTone: "coming-soon" as const,
     background: <img className="absolute -top-20 -right-20 opacity-60" />,
     className: "lg:col-start-3 lg:col-end-3 lg:row-start-1 lg:row-end-2",
   },

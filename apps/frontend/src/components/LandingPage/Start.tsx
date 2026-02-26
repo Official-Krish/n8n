@@ -1,12 +1,16 @@
 import { OrbitingCircles } from "../ui/orbiting-circles"
 import { hasAuthSession } from "@/http";
 
-export const Start = () => {
+type StartProps = {
+  onExampleWorkflowsClick: () => void
+}
+
+export const Start = ({ onExampleWorkflowsClick }: StartProps) => {
   const handleGetStarted = () => {
     if (typeof window === "undefined") return
 
     if (hasAuthSession()) {
-      window.location.href = "/dashboard"
+      window.location.href = "/create/onboarding"
     } else {
       window.location.href = "/signup"
     }
@@ -53,6 +57,7 @@ export const Start = () => {
               </button>
               <button
                 type="button"
+                onClick={onExampleWorkflowsClick}
                 className="inline-flex items-center justify-center rounded-lg border border-neutral-700/80 bg-black/40 px-5 py-2.5 text-sm font-medium text-neutral-200 hover:bg-neutral-900/70 transition-colors cursor-pointer"
               >
                 View example workflows
@@ -62,11 +67,36 @@ export const Start = () => {
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 text-xs text-neutral-500 pt-2 sm:pt-3">
               <div className="flex items-center gap-2 justify-center md:justify-start">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                <span>Broker-safe. You stay in control of your keys.</span>
+                <span>Broker safe. You stay in control of your keys.</span>
               </div>
               <div className="flex items-center gap-2 justify-center md:justify-start">
                 <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
-                <span>Drag-and-drop building — no infra to manage.</span>
+                <span>Drag and drop building — no infra to manage.</span>
+              </div>
+            </div>
+            <div className="rounded-2xl border border-neutral-800 bg-neutral-950/60 p-4">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#f17463]">
+                Trust & transparency
+              </p>
+              <div className="mt-3 grid gap-3 text-left text-xs text-neutral-400 sm:grid-cols-3">
+                <div>
+                  <p className="text-neutral-200">What data is used</p>
+                  <p className="mt-1">
+                    Workflow config, selected symbols, trigger values, and broker execution metadata.
+                  </p>
+                </div>
+                <div>
+                  <p className="text-neutral-200">What goes to AI</p>
+                  <p className="mt-1">
+                    Only context required for reasoning summaries and risk notes, not raw broker credentials.
+                  </p>
+                </div>
+                <div>
+                  <p className="text-neutral-200">How consent works</p>
+                  <p className="mt-1">
+                    AI analysis and broker trade ingestion run only after explicit opt-in inside the action form.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
