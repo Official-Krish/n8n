@@ -8,8 +8,8 @@ import {
     NOTION_VERSION,
     toDateLabel,
     wasNotionReportCreatedToday,
-} from "./notion/helpers";
-import { getZerodhaTradeSummary } from "./notion/zerodhaReportData";
+} from "./reporting/helpers";
+import { getZerodhaTradeSummary } from "./reporting/zerodhaReportData";
 
 interface NotionDailyReportMetadata {
     notionApiKey?: string;
