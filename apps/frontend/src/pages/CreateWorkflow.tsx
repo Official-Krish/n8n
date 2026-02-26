@@ -312,7 +312,7 @@ export const CreateWorkflow = () => {
                         setEdges([]);
                         setWorkflowId(null);
                         setWorkflowName("");
-                        navigate("/create");
+                        navigate("/create/builder");
                         setShowNameDialog(true);
                       }}
                     >

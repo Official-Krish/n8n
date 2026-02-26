@@ -38,7 +38,7 @@ export const Appbar = () => {
         },
         {
           name: "Create Workflow",
-          link: "/create",
+          link: "/create/onboarding",
         },
     ];
     useMotionValueEvent(scrollY, "change", (latest) => {
@@ -88,10 +88,10 @@ export const Appbar = () => {
                             src="/Logo.png"
                             className="rounded-full"
                             alt="logo"
-                            width={30}
-                            height={30}
+                            width={40}
+                            height={40}
                         />
-                        <span className="font-medium text-white">QuantNest</span>
+                        <span className="font-semibold text-lg text-white">QuantNest</span>
                     </div>
                     <div className="flex items-center max-w-lg">
                         {isAuthenticated ? navItemsAuth.map((item, idx) => (

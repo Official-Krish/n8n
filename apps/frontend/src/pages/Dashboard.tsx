@@ -62,7 +62,7 @@ export const Dashboard = () => {
           <div className="flex flex-col items-end gap-3">
             <Button
               className="bg-white px-5 py-2 text-xs font-medium text-neutral-900 hover:bg-gray-200 md:text-sm cursor-pointer"
-              onClick={() => navigate("/create")}
+              onClick={() => navigate("/create/onboarding")}
             >
               + Create new workflow
             </Button>
@@ -133,7 +133,7 @@ export const Dashboard = () => {
               <p>No workflows yet.</p>
               <Button
                 className="mt-4 bg-white px-4 py-2 text-xs font-medium text-neutral-900 hover:bg-gray-200 md:text-sm"
-                onClick={() => navigate("/create")}
+                onClick={() => navigate("/create/onboarding")}
               >
                 Start your first workflow
               </Button>
@@ -152,4 +152,3 @@ export const Dashboard = () => {
     </div>
   );
 };
-

@@ -1,6 +1,7 @@
 import "@xyflow/react/dist/style.css";
 import { Route, Routes } from "react-router-dom";
 import { CreateWorkflow } from "./pages/CreateWorkflow";
+import { CreateWorkflowOnboarding } from "./pages/CreateWorkflowOnboarding";
 import { Auth } from "./pages/Auth";
 import { Landing } from "./pages/Landing";
 import { Dashboard } from "./pages/Dashboard";
@@ -24,6 +25,22 @@ export function App() {
       />
       <Route
         path="/create"
+        element={
+          <ProtectedRoute>
+            <CreateWorkflowOnboarding />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/create/onboarding"
+        element={
+          <ProtectedRoute>
+            <CreateWorkflowOnboarding />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/create/builder"
         element={
           <ProtectedRoute>
             <CreateWorkflow />

@@ -52,7 +52,7 @@ export function Auth({ mode }: { mode: "signin" | "signup" }) {
         description: "Redirecting you to the workflow builder.",
       });
 
-      nav("/create");
+      nav("/create/onboarding");
     } catch (e: any) {
       const message = e?.response?.data?.message ?? e?.message ?? "Request failed";
       setError(message);
