@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { apiGetAllWorkflows } from "@/http";
 import type { Workflow } from "@/types/api";
 import { Button } from "@/components/ui/button";
-import { WorkflowTable } from "./dashboard/WorkflowTable";
+import { WorkflowTable } from "../components/dashboard/WorkflowTable";
 
 export const Dashboard = () => {
   const navigate = useNavigate();

@@ -1,12 +1,12 @@
 import "@xyflow/react/dist/style.css";
 import { Route, Routes } from "react-router-dom";
-import { CreateWorkflow } from "./components/CreateWorkflow";
-import { Auth } from "./components/Auth";
-import { Landing } from "./components/Landing";
-import { Dashboard } from "./components/Dashboard";
+import { CreateWorkflow } from "./pages/CreateWorkflow";
+import { Auth } from "./pages/Auth";
+import { Landing } from "./pages/Landing";
+import { Dashboard } from "./pages/Dashboard";
 import { ProtectedRoute } from "./components/ProtectedRoute";
-import Profile from "./components/Profile";
-import { Executions } from "./components/Executions";
+import Profile from "./pages/Profile";
+import { Executions } from "./pages/Executions";
 
 export function App() {
   return (

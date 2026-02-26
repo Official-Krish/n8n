@@ -2,23 +2,23 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { applyEdgeChanges, applyNodeChanges } from "@xyflow/react";
 import { useNavigate, useParams } from "react-router-dom";
 import { type EdgeType, type NodeType } from "@quantnest-trading/types";
-import { WorkflowCanvas } from "./workflow/WorkflowCanvas";
-import { WorkflowNameDialog } from "./workflow/WorkflowNameDialog";
-import { PriceTrigger } from "./nodes/triggers/PriceTrigger";
-import { Timer } from "./nodes/triggers/timers";
-import { zerodhaAction } from "./nodes/actions/zerodha";
-import { growwAction } from "./nodes/actions/growwAction";
-import { gmailAction } from "./nodes/actions/gmailAction";
-import { discordAction } from "./nodes/actions/discordAction";
-import { notionDailyReportAction } from "./nodes/actions/notionDailyReportAction";
+import { WorkflowCanvas } from "../components/workflow/WorkflowCanvas";
+import { WorkflowNameDialog } from "../components/workflow/WorkflowNameDialog";
+import { PriceTrigger } from "../components/nodes/triggers/PriceTrigger";
+import { Timer } from "../components/nodes/triggers/timers";
+import { zerodhaAction } from "../components/nodes/actions/zerodha";
+import { growwAction } from "../components/nodes/actions/growwAction";
+import { gmailAction } from "../components/nodes/actions/gmailAction";
+import { discordAction } from "../components/nodes/actions/discordAction";
+import { notionDailyReportAction } from "../components/nodes/actions/notionDailyReportAction";
 import {
   apiCreateWorkflow,
   apiGetWorkflow,
   apiUpdateWorkflow,
 } from "@/http";
 import { Button } from "@/components/ui/button";
-import { lighterAction } from "./nodes/actions/lighterAction";
-import { conditionTrigger } from "./nodes/triggers/condtional";
+import { lighterAction } from "../components/nodes/actions/lighterAction";
+import { conditionTrigger } from "../components/nodes/triggers/condtional";
 
 const nodeTypes = {
   "price-trigger": PriceTrigger,

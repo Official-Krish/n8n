@@ -1,18 +1,18 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { apiGetExecution, apiGetMarketStatus, apiGetWorkflow, apiGetZerodhaTokenStatus } from "@/http";
-import { ExecutionBrokerStatus } from "./executions/ExecutionBrokerStatus";
-import { ExecutionHistory } from "./executions/ExecutionHistory";
-import { ExecutionsHeader } from "./executions/ExecutionsHeader";
-import { ExecutionMetrics } from "./executions/ExecutionMetrics";
-import type { Execution, ExecutionStatusFilter } from "./executions/types";
+import { ExecutionBrokerStatus } from "../components/executions/ExecutionBrokerStatus";
+import { ExecutionHistory } from "../components/executions/ExecutionHistory";
+import { ExecutionsHeader } from "../components/executions/ExecutionsHeader";
+import { ExecutionMetrics } from "../components/executions/ExecutionMetrics";
+import type { Execution, ExecutionStatusFilter } from "../components/executions/types";
 import {
   calculateDuration,
   computeMetrics,
   filterExecutions,
   formatDate,
   sortExecutionsByStartTime,
-} from "./executions/utils";
+} from "../components/executions/utils";
 
 export const Executions = () => {
   const { workflowId } = useParams<{ workflowId: string }>();
