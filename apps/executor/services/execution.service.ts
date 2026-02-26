@@ -1,5 +1,5 @@
 import { ExecutionModel } from "@quantnest-trading/db/client";
-import { executeWorkflow } from "../execute";
+import { executeWorkflow } from "../workflow/execute";
 import type { WorkflowType } from "../types";
 import { EXECUTION_COOLDOWN_MS } from "../config/constants";
 
