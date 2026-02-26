@@ -29,6 +29,8 @@ export const ActionSheets = ({
             ? "Order Execution"
             : initialAction === "Flow Control"
               ? "Flow Control"
+              : initialAction === "Reporting"
+                ? "Reporting"
               : "Order Notification"}
         </p>
 
@@ -37,6 +39,8 @@ export const ActionSheets = ({
             ? "Execute trades on your selected brokerage"
             : initialAction === "Flow Control"
               ? "Add logical branching to your workflow graph"
+              : initialAction === "Reporting"
+                ? "Generate reports and strategy documentation"
               : "Send email or chat notifications on order events"}
         </p>
       </div>

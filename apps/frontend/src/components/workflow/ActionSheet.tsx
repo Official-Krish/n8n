@@ -49,7 +49,7 @@ export const ActionSheet = ({
 }) => {
   const [metadata, setMetadata] = useState<TradingMetadata | LighterMetadata | {}>({});
   const [selectedAction, setSelectedAction] = useState("");
-  const [initialAction, setInitialAction] = useState<"Order Notification" | "Order Execution" | "Flow Control" | undefined>(undefined);
+  const [initialAction, setInitialAction] = useState<"Order Notification" | "Order Execution" | "Flow Control" | "Reporting" | undefined>(undefined);
   const canCreateAction =
     !!selectedAction &&
     (
@@ -80,7 +80,7 @@ export const ActionSheet = ({
           {/* Step 1: Select Action Type */}
           <ActionTypeSelector
             value={initialAction || ""}
-            onValueChange={(value) => setInitialAction(value as "Order Notification" | "Order Execution")}
+            onValueChange={(value) => setInitialAction(value as "Order Notification" | "Order Execution" | "Flow Control" | "Reporting")}
             actions={[
               {
                 id: "Order Execution",
@@ -97,17 +97,36 @@ export const ActionSheet = ({
                 title: "Flow Control",
                 description: "Branch workflow paths using conditions",
               },
+              ...(hasZerodhaAction
+                ? [{
+                    id: "Reporting",
+                    title: "Reporting",
+                    description: "Generate analytics and documentation artifacts",
+                  }]
+                : []),
             ]}
           />
+          {!hasZerodhaAction && (
+            <p className="text-[11px] text-amber-300/90">
+              Add a Zerodha action node to enable Reporting actions.
+            </p>
+          )}
           
           {/* Step 2: Select Specific Broker/Service */}
           {initialAction === "Order Notification" && (
             <ActionSheets
               value={selectedAction}
               onValueChange={setSelectedAction}
-              actions={SUPPORTED_ACTIONS["Notification"].filter((action) =>
-                action.id === "notion-daily-report" ? hasZerodhaAction : true
-              )}
+              actions={SUPPORTED_ACTIONS["Notification"]}
+              initialAction={initialAction}
+            />
+          )}
+
+          {initialAction === "Reporting" && (
+            <ActionSheets
+              value={selectedAction}
+              onValueChange={setSelectedAction}
+              actions={hasZerodhaAction ? SUPPORTED_ACTIONS["Reporting"] : []}
               initialAction={initialAction}
             />
           )}

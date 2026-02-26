@@ -28,7 +28,9 @@ export const SUPPORTED_ACTIONS = {
             id: "discord",
             title: "Discord",
             description: "Send Discord webhook notifications for workflow events",
-        },
+        }
+    ],
+    "Reporting": [
         {
             id: "notion-daily-report",
             title: "Notion Daily Report",
